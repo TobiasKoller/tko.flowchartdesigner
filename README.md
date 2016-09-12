@@ -1,10 +1,8 @@
 # tko.flowchartdesigner
-Javascript Library to easily create flowcharts with drag/drop functionallity based on 
+Javascript Library to easily create flowcharts with drag/drop functionality based on the awesome library
 <a href="http://dmitrybaranovskiy.github.io/raphael/">Raphael JS</a> .
 
-I wrote this project in Typescript/Javascript.
-
-This is my first github-project. I will add all the readme/api/etc when I know how to do all that formatting stuff :)
+This is my first github-project which is written in typescript. I will add all the readme/api/etc when I know how to do all that formatting stuff :)
 
 In the meanwhile check out the demo.
 
@@ -13,7 +11,18 @@ In the meanwhile check out the demo.
 
 Please have a look insdie the app.ts-file to get a first impression of the api. the window.onload-method will contain an example which adds some shapes to the canvas, connnects them, etc.
 
-Example in Typescript
+
+(if you are not familiar with typescript, simply use the below code like javascript and remove the type-syntax.
+for example: instead of using
+
+```javascript
+var x: string = "";
+```
+use 
+```javascript
+var x = "";
+```
+#Example in Typescript
 ```javascript
     var options = new flowchart.FlowChartOptions();
     //using curved-line to connect shapes.
