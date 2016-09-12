@@ -1,3 +1,11 @@
+/**
+* TKO.FlowchartDesigner v1.0.0.0
+* License: MIT
+* Created By: Tobias Koller
+* Git: https://github.com/TobiasKoller/tko.flowchartdesigner
+*/
+
+
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
