@@ -1,0 +1,154 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <ProjectGuid>{FF73F371-002F-4E4E-AFD1-D05DC272688C}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <OutputPath>bin</OutputPath>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <TypeScriptToolsVersion>1.8</TypeScriptToolsVersion>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+  </PropertyGroup>
+  <ItemGroup>
+    <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="css\app.css" />
+    <Content Include="Content\bootstrap-theme.css" />
+    <Content Include="Content\bootstrap-theme.min.css" />
+    <Content Include="Content\bootstrap.css" />
+    <Content Include="Content\bootstrap.min.css" />
+    <Content Include="fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="index.html" />
+    <Content Include="packages.config" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Content\bootstrap.min.css.map" />
+    <Content Include="Content\bootstrap.css.map" />
+    <Content Include="Content\bootstrap-theme.min.css.map" />
+    <Content Include="Content\bootstrap-theme.css.map" />
+    <None Include="bundleconfig.json" />
+    <None Include="Scripts\jquery-1.9.1.intellisense.js" />
+    <Content Include="Scripts\bootstrap.js" />
+    <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\jquery-1.9.1.js" />
+    <Content Include="Scripts\jquery-1.9.1.min.js" />
+    <Content Include="Scripts\raphael-min.js" />
+    <Content Include="Scripts\raphael.js" />
+    <Content Include="tko.flowchart.js" />
+    <Content Include="tko.flowchart.min.js">
+      <DependentUpon>tko.flowchart.js</DependentUpon>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="app.ts" />
+    <TypeScriptCompile Include="common\DomHelper.ts" />
+    <TypeScriptCompile Include="flowchart\ModelLoader.ts" />
+    <TypeScriptCompile Include="flowchart\model\BaseElement.ts" />
+    <TypeScriptCompile Include="flowchart\constants\ConnectionPointPosition.ts" />
+    <TypeScriptCompile Include="flowchart\constants\ConnectionPointType.ts" />
+    <TypeScriptCompile Include="flowchart\constants\ConnectionType.ts" />
+    <TypeScriptCompile Include="flowchart\constants\EventType.ts" />
+    <TypeScriptCompile Include="flowchart\constants\ConnectionDrawerType.ts" />
+    <TypeScriptCompile Include="flowchart\constants\ShapeType.ts" />
+    <TypeScriptCompile Include="flowchart\model\EventListener.ts" />
+    <TypeScriptCompile Include="flowchart\model\EventParamConnection.ts" />
+    <TypeScriptCompile Include="flowchart\model\EventParamDeleteList.ts" />
+    <TypeScriptCompile Include="flowchart\model\EventParamShape.ts" />
+    <TypeScriptCompile Include="flowchart\connection\RaphaelConnection.ts" />
+    <TypeScriptCompile Include="flowchart\model\ExportModel.ts" />
+    <TypeScriptCompile Include="flowchart\model\ExportModelConnection.ts" />
+    <TypeScriptCompile Include="flowchart\model\ExportModelConnectionPoint.ts" />
+    <TypeScriptCompile Include="flowchart\model\ExportModelShape.ts" />
+    <TypeScriptCompile Include="flowchart\model\FlowChartModel.ts" />
+    <TypeScriptCompile Include="flowchart\model\NamespaceRegistry.ts" />
+    <TypeScriptCompile Include="flowchart\model\SelectableElement.ts" />
+    <TypeScriptCompile Include="flowchart\connection\ShapeConnection.ts" />
+    <TypeScriptCompile Include="flowchart\Drawer.ts" />
+    <TypeScriptCompile Include="flowchart\EventHandler.ts" />
+    <TypeScriptCompile Include="flowchart\FlowChartOptions.ts" />
+    <TypeScriptCompile Include="flowchart\model\ShapePosition.ts" />
+    <TypeScriptCompile Include="flowchart\NamespaceRegistrator.ts" />
+    <TypeScriptCompile Include="flowchart\SelectionManager.ts" />
+    <TypeScriptCompile Include="flowchart\connection\drawer\Elbow.ts" />
+    <TypeScriptCompile Include="flowchart\connection\drawer\IConnectionDrawer.ts" />
+    <TypeScriptCompile Include="flowchart\connection\drawer\Curved.ts" />
+    <TypeScriptCompile Include="flowchart\connection\drawer\Straight.ts" />
+    <TypeScriptCompile Include="flowchart\ShapeConnector.ts" />
+    <TypeScriptCompile Include="flowchart\ShapeMover.ts" />
+    <TypeScriptCompile Include="flowchart\shape\ConnectionPoint.ts" />
+    <TypeScriptCompile Include="flowchart\shape\IShape.ts" />
+    <TypeScriptCompile Include="flowchart\shape\metadata\IShapeMetadata.ts" />
+    <TypeScriptCompile Include="flowchart\shape\Process.ts" />
+    <TypeScriptCompile Include="flowchart\shape\Decision.ts" />
+    <TypeScriptCompile Include="flowchart\shape\ShapeBase.ts" />
+    <TypeScriptCompile Include="flowchart\shape\metadata\Html.ts" />
+    <TypeScriptCompile Include="flowchart\FlowChart.ts" />
+    <TypeScriptCompile Include="flowchart\shape\Terminal.ts" />
+    <TypeScriptCompile Include="Scripts\typings\raphael\raphael.d.ts" />
+    <TypeScriptCompile Include="_references.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Scripts\jquery-1.9.1.min.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="modules\" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace>TKO.FlowChartDesigner</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\WebApplications\Microsoft.WebApplication.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\WebApplications\Microsoft.WebApplication.targets')" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>62201</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:62201/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <TypeScriptRemoveComments>false</TypeScriptRemoveComments>
+    <TypeScriptSourceMap>true</TypeScriptSourceMap>
+    <TypeScriptTarget>ES5</TypeScriptTarget>
+    <TypeScriptJSXEmit>None</TypeScriptJSXEmit>
+    <TypeScriptCompileOnSaveEnabled>True</TypeScriptCompileOnSaveEnabled>
+    <TypeScriptNoImplicitAny>False</TypeScriptNoImplicitAny>
+    <TypeScriptModuleKind>AMD</TypeScriptModuleKind>
+    <TypeScriptOutFile>H:\TKO.FlowChartDesigner\TKO.FlowChartDesigner\tko.flowchart.js</TypeScriptOutFile>
+    <TypeScriptOutDir />
+    <TypeScriptGeneratesDeclarations>False</TypeScriptGeneratesDeclarations>
+    <TypeScriptNoEmitOnError>True</TypeScriptNoEmitOnError>
+    <TypeScriptMapRoot />
+    <TypeScriptSourceRoot />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <TypeScriptRemoveComments>true</TypeScriptRemoveComments>
+    <TypeScriptSourceMap>false</TypeScriptSourceMap>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
+</Project>

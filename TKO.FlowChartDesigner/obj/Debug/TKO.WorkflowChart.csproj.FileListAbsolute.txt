@@ -1,0 +1,6 @@
+H:\TKO.WorkflowChart\TKO.WorkflowChart\bin\TKO.WorkflowChart.dll.config
+H:\TKO.WorkflowChart\TKO.WorkflowChart\bin\TKO.WorkflowChart.dll
+H:\TKO.WorkflowChart\TKO.WorkflowChart\bin\TKO.WorkflowChart.pdb
+H:\TKO.WorkflowChart\TKO.WorkflowChart\obj\Debug\TKO.WorkflowChart.csprojResolveAssemblyReference.cache
+H:\TKO.WorkflowChart\TKO.WorkflowChart\obj\Debug\TKO.WorkflowChart.dll
+H:\TKO.WorkflowChart\TKO.WorkflowChart\obj\Debug\TKO.WorkflowChart.pdb

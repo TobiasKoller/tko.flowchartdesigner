@@ -1,0 +1,4 @@
+H:\TKO.FlowChartDesigner\TKO.FlowChartDesigner\bin\TKO.FlowChartDesigner.dll
+H:\TKO.FlowChartDesigner\TKO.FlowChartDesigner\bin\TKO.FlowChartDesigner.pdb
+H:\TKO.FlowChartDesigner\TKO.FlowChartDesigner\obj\Debug\TKO.FlowChartDesigner.dll
+H:\TKO.FlowChartDesigner\TKO.FlowChartDesigner\obj\Debug\TKO.FlowChartDesigner.pdb
