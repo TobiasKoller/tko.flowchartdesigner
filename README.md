@@ -30,7 +30,7 @@ var x = "";
 
     
     //"myCanvas" is the name of the div where to draw the stuff.
-    wc = new flowchart.FlowChart("myCanvas",options);
+    var wc = new flowchart.FlowChart("myCanvas",options);
 
     //creating some shapes. available right now: Terminal, Process, Decision
     var s0 = new flowchart.shape.Terminal("0", 150, 50, new flowchart.shape.metadata.Html("Start"));
