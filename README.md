@@ -29,7 +29,7 @@ var x = "";
     options.ShapeConnectionType = flowchart.constants.ConnectionDrawerType.Curved;
 
     
-    //"myCanvas" is the name of the div where to draw the stuff.
+    //"myCanvas" is the id of the div where to draw the stuff.
     var wc = new flowchart.FlowChart("myCanvas",options);
 
     //creating some shapes. available right now: Terminal, Process, Decision
