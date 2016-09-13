@@ -6,6 +6,9 @@ This is my first github-project which is written in typescript. I will add all t
 
 In the meanwhile check out the demo.
 
+```diff
+-currently (2016/13/09) it only works properly in Firefox. I will add support for the other modern browsers asap...</p>
+```
 <a href="https://tobiaskoller.github.io/tko.flowchartdesigner">DEMO</a>
 
 
