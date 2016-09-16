@@ -54,7 +54,6 @@ module flowchart {
             metadataElement.setAttributeNS(null, "height", String(shape.Height));
             metadataElement.setAttributeNS(null, "x", String(posX));
             metadataElement.setAttributeNS(null, "y", String(posY));
-            metadataElement.setAttributeNS(null, "requiredExtensions", "http://www.w3.org/1999/xhtml");
 
             //var x = document.createElementNS("http://www.w3.org/1999/xhtml", "div");
             //x.setAttribute("xmlns", "http://www.w3.org/1999/xhtml");
