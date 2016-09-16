@@ -26,6 +26,9 @@ module common {
                 var styleSheet: any = document.styleSheets[i];
                 var rules = styleSheet.rules || styleSheet.cssRules;
 
+                if (!rules)
+                    continue;
+
                 var rule: CSSStyleRule;
                 for (rule of rules) {
                     if (rule.selectorText == className)

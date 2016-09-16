@@ -17,11 +17,11 @@ module flowchart.shape.metadata {
             var htmlElement: HTMLElement = document.createElement("div");
             htmlElement.style.width = "100%";
             htmlElement.style.height = "100%";
-            htmlElement.style.position = "absolute";
+            //htmlElement.style.position = "absolute";
 
 
             htmlElement.innerHTML =
-                "   <div>" + this.Label + "</div>"
+                "   <div>" + this.Label + "</div>";
             this.Html = htmlElement;
         }
 

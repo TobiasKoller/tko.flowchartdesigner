@@ -91,6 +91,7 @@ function AddNewShape() {
 }
 
 window.onload = () => {
+
     var options = new flowchart.FlowChartOptions();
     options.ShapeConnectionType = flowchart.constants.ConnectionDrawerType.Curved;
     options.ColorSelectedShape = "blue";
@@ -101,7 +102,7 @@ window.onload = () => {
 
     var s0 = new flowchart.shape.Terminal("0", 150, 50, new flowchart.shape.metadata.Html("Start"));
     var s1 = new flowchart.shape.Process("1", 150, 70, new flowchart.shape.metadata.Html("Do something"));
-    var s2 = new flowchart.shape.Decision("2", 100, 100, new flowchart.shape.metadata.Html("Ok?"));
+    var s2 = new flowchart.shape.Decision("2", 200, 200, new flowchart.shape.metadata.Html("Ok?"));
     var s3 = new flowchart.shape.Process("3", 150, 70, new flowchart.shape.metadata.Html("Yes"));
     var s4 = new flowchart.shape.Process("4", 150, 70, new flowchart.shape.metadata.Html("No"));
     var s5 = new flowchart.shape.Terminal("5", 150, 50, new flowchart.shape.metadata.Html("End"));

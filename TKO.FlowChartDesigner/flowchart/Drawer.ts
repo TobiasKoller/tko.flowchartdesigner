@@ -47,12 +47,18 @@ module flowchart {
             
             var svgRoot = this.Paper.canvas;
             var metadataElement: SVGForeignObjectElement = document.createElementNS("http://www.w3.org/2000/svg", "foreignObject");
-            
-            //metadata.innerHTML = "<i class='fa fa-sitemap'></i>";
+            //TODO http://stackoverflow.com/questions/13848039/svg-foreignobject-contents-do-not-display-unless-plain-text
+
+             //metadata.innerHTML = "<i class='fa fa-sitemap'></i>";
             metadataElement.setAttributeNS(null, "width", String(shape.Width));
             metadataElement.setAttributeNS(null, "height", String(shape.Height));
             metadataElement.setAttributeNS(null, "x", String(posX));
             metadataElement.setAttributeNS(null, "y", String(posY));
+            metadataElement.setAttributeNS(null, "requiredExtensions", "http://www.w3.org/1999/xhtml");
+
+            //var x = document.createElementNS("http://www.w3.org/1999/xhtml", "div");
+            //x.setAttribute("xmlns", "http://www.w3.org/1999/xhtml");
+            //metadataElement.appendChild(x);
 
             //we first add the metadata, that it will be behind the real raphaeljs object
             //when the raphaeljs element is transparent we see the metadata shining through
@@ -77,8 +83,13 @@ module flowchart {
             var metaHtml = metadata.GetHtml();
 
             metaHtml.classList.add(shape.CssContentClass);
-            
-            shape.RaphaelMetadata.innerHTML = metaHtml.outerHTML + div.outerHTML;
+
+            //metaHtml.appendChild(div);
+
+            div.appendChild(metaHtml);
+            shape.RaphaelMetadata.appendChild(div);
+            //shape.RaphaelMetadata.appendChild(metaHtml); //.innerHTML = metaHtml.outerHTML + div.outerHTML;
+            //shape.RaphaelMetadata.appendChild(div);
         }
         
     }
