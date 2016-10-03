@@ -58,8 +58,12 @@ module flowchart.shape {
             element.classList.add(this.CssBackgroundClass);
             element.style.width = (this.Width*0.7)+"px";
             element.style.height = (this.Height * 0.7) + "px";
-            element.style.marginLeft = (this.Width * 0.15) + "px";
-            element.style.marginTop = (this.Height * 0.15) + "px";
+
+            element.style.marginLeft = (this.Width * 0.49) + "px";
+            element.style.marginTop = (this.Height * 0.29) + "px";
+
+            //element.style.marginLeft = (this.Width * 0.15) + "px";
+            //element.style.marginTop = (this.Height * 0.15) + "px";
 
             return element;
 

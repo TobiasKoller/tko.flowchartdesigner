@@ -65,13 +65,27 @@ span {
   /******************************Shape decision******************************/
  .shape_decision_background {
     
-	  background-color: white;
+      background: white;
+/* Rotate */
+    -webkit-transform: rotate(-45deg);
+    -moz-transform: rotate(-45deg);
+    -ms-transform: rotate(-45deg);
+    -o-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+/* Rotate Origin */
+    -webkit-transform-origin: 0 100%;
+    -moz-transform-origin: 0 100%;
+    -ms-transform-origin: 0 100%;
+    -o-transform-origin: 0 100%;
+    transform-origin: 0 100%;
+    /*margin: 29px 0 0px 49px;*/
+
+	  /*background-color: white;
      -webkit-box-sizing: content-box;
 	  -moz-box-sizing: content-box;
 	  box-sizing: content-box;
 	  width: 40px;
 	  height: 40px;
-	  /*margin: 3px 0 0 30px;*/
 	  border: none;
 	  font: normal 100%/normal Arial, Helvetica, sans-serif;
 	  color: rgba(0,0,0,1);
@@ -80,13 +94,36 @@ span {
 	  -webkit-transform: rotateZ(-45deg)   ;
 	  transform: rotateZ(-45deg)   ;
 	  -webkit-transform-origin: 0 100% 0deg;
-	  transform-origin: 0 100% 0deg;
+	  transform-origin: 0 100% 0deg;*/
+
+      
+	  /*margin: 3px 0 0 30px;*/
  }
 
  .shape_decision_content {
+
+    /*Center content*/
+    -webkit-transform: rotate(-45deg);
+    -moz-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    -o-transform: rotate(45deg);
+    transform: rotate(45deg);
+	
+     height: 100%;
+    <!-- display: -webkit-flexbox;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex; -->
+    -webkit-flex-align: center;
+    -ms-flex-align: center;
+    -webkit-align-items: center;
+    align-items: center;
+    justify-content: center;
+
+
        /*Center content*/
     /*set text in the right angle*/
-    -webkit-transform: rotateZ(45deg)   ;
+    /*-webkit-transform: rotateZ(45deg)   ;
     transform: rotateZ(45deg)   ;
     background-color:transparent;
     height: 100%;
@@ -98,7 +135,7 @@ span {
     -ms-flex-align: center;
     -webkit-align-items: center;
     align-items: center;
-    justify-content: center;
+    justify-content: center;*/
 
     /*height: 100%;
     display: -webkit-flexbox;

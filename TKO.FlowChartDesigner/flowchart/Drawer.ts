@@ -32,6 +32,8 @@ module flowchart {
 
             shape.RaphaelElement = shape.DrawShape(this.Paper, posX, posY);
 
+            shape.RaphaelElement.toFront();
+
             //set reference from the raphaelobject to the shape
             shape.SetRaphaelShapeReference();
 
@@ -54,6 +56,7 @@ module flowchart {
             metadataElement.setAttributeNS(null, "height", String(shape.Height));
             metadataElement.setAttributeNS(null, "x", String(posX));
             metadataElement.setAttributeNS(null, "y", String(posY));
+            metadataElement.setAttributeNS(null, "style", "padding:1px");
 
             //var x = document.createElementNS("http://www.w3.org/1999/xhtml", "div");
             //x.setAttribute("xmlns", "http://www.w3.org/1999/xhtml");
@@ -87,6 +90,7 @@ module flowchart {
 
             div.appendChild(metaHtml);
             shape.RaphaelMetadata.appendChild(div);
+            
             //shape.RaphaelMetadata.appendChild(metaHtml); //.innerHTML = metaHtml.outerHTML + div.outerHTML;
             //shape.RaphaelMetadata.appendChild(div);
         }
