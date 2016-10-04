@@ -2,7 +2,7 @@
 
 var wc: flowchart.FlowChart;
 var savedModel: any;
-declare var $: any;
+declare var $: JQueryStatic;
 
 function ShowError(show,message) {
 

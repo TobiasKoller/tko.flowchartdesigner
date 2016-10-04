@@ -97,6 +97,7 @@
     <TypeScriptCompile Include="flowchart\shape\metadata\Html.ts" />
     <TypeScriptCompile Include="flowchart\FlowChart.ts" />
     <TypeScriptCompile Include="flowchart\shape\Terminal.ts" />
+    <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\raphael\raphael.d.ts" />
     <TypeScriptCompile Include="_references.ts" />
   </ItemGroup>

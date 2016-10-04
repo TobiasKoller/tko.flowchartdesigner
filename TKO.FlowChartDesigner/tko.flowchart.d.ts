@@ -206,7 +206,7 @@ declare module flowchart {
 }
 declare var wc: flowchart.FlowChart;
 declare var savedModel: any;
-declare var $: any;
+declare var $: JQueryStatic;
 declare function ShowError(show: any, message: any): void;
 declare function UpdateJsonOutput(): void;
 declare function ClearModel(): void;
