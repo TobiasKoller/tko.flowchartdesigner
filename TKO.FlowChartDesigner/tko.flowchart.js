@@ -384,8 +384,11 @@ var flowchart;
             var div = shape.GetMetadataDiv();
             var metaHtml = metadata.GetHtml();
             metaHtml.classList.add(shape.CssContentClass);
-            //metaHtml.appendChild(div);
             div.appendChild(metaHtml);
+            //metaHtml.appendChild(div);
+            for (var i = shape.RaphaelMetadata.childNodes.length - 1; i >= 0; i--) {
+                shape.RaphaelMetadata.removeChild(shape.RaphaelMetadata.childNodes[i]);
+            }
             shape.RaphaelMetadata.appendChild(div);
             //shape.RaphaelMetadata.appendChild(metaHtml); //.innerHTML = metaHtml.outerHTML + div.outerHTML;
             //shape.RaphaelMetadata.appendChild(div);
@@ -746,6 +749,11 @@ window.onload = function () {
         //metadata.SetHtmlText("<div>test xyz</div>");
         s3.SetCssContentClass("test_shape_process_content");
         wc.UpdateShapeMetadata(s3);
+        setTimeout(function () {
+            var metadata = s3.Metadata;
+            metadata.SetHtmlText("<div>xxx</div>");
+            wc.UpdateShapeMetadata(s3, metadata);
+        }, 5000);
     }, 5000);
     UpdateJsonOutput();
 };

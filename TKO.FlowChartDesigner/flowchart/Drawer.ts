@@ -85,10 +85,15 @@ module flowchart {
             var metaHtml = metadata.GetHtml();
 
             metaHtml.classList.add(shape.CssContentClass);
+            div.appendChild(metaHtml);
+
 
             //metaHtml.appendChild(div);
 
-            div.appendChild(metaHtml);
+            for (var i = shape.RaphaelMetadata.childNodes.length-1; i >= 0; i--) {
+                shape.RaphaelMetadata.removeChild(shape.RaphaelMetadata.childNodes[i]);
+            }
+
             shape.RaphaelMetadata.appendChild(div);
             
             //shape.RaphaelMetadata.appendChild(metaHtml); //.innerHTML = metaHtml.outerHTML + div.outerHTML;

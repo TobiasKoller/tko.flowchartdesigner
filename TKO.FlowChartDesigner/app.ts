@@ -240,6 +240,13 @@ window.onload = () => {
         //metadata.SetHtmlText("<div>test xyz</div>");
         s3.SetCssContentClass("test_shape_process_content");
         wc.UpdateShapeMetadata(s3);
+
+        setTimeout(() => {
+            var metadata = s3.Metadata;
+            metadata.SetHtmlText("<div>xxx</div>");
+
+            wc.UpdateShapeMetadata(s3, metadata);
+        },5000);
     }, 5000);
 
 
