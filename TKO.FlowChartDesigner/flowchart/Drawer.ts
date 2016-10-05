@@ -28,6 +28,9 @@ module flowchart {
             if (isNaN(shape.Width)) throw "Shape.Width is not a valid number.";
             if (isNaN(shape.Height)) throw "Shape.Height is not a valid number.";
 
+            if (!this.eventHandler.Notify(constants.EventType.BeforeShapeCreated, new model.EventParamShape(shape)))
+                return;
+
             this.SetMetadata(shape,shape.Metadata, posX, posY);
 
             shape.RaphaelElement = shape.DrawShape(this.Paper, posX, posY);
@@ -43,6 +46,8 @@ module flowchart {
                 
                 point.SetRaphaelShapeReference();
             }
+
+            this.eventHandler.Notify(constants.EventType.AfterShapeCreated, new model.EventParamShape(shape));
         }
 
         SetMetadata(shape: shape.ShapeBase, metadata: shape.metadata.IShapeMetadata, posX:number, posY:number) {

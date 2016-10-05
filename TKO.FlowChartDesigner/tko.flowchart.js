@@ -3,12 +3,6 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-/*!
-* TKO.FlowchartDesigner v1.0.1.0
-* License: MIT
-* Created By: Tobias Koller
-* Git: https://github.com/TobiasKoller/tko.flowchartdesigner
-*/ 
 var flowchart;
 (function (flowchart) {
     var constants;
@@ -350,6 +344,8 @@ var flowchart;
                 throw "Shape.Width is not a valid number.";
             if (isNaN(shape.Height))
                 throw "Shape.Height is not a valid number.";
+            if (!this.eventHandler.Notify(flowchart.constants.EventType.BeforeShapeCreated, new flowchart.model.EventParamShape(shape)))
+                return;
             this.SetMetadata(shape, shape.Metadata, posX, posY);
             shape.RaphaelElement = shape.DrawShape(this.Paper, posX, posY);
             shape.RaphaelElement.toFront();
@@ -361,6 +357,7 @@ var flowchart;
                 point.RaphaelElement = point.DrawShape(this.Paper, posX, posY);
                 point.SetRaphaelShapeReference();
             }
+            this.eventHandler.Notify(flowchart.constants.EventType.AfterShapeCreated, new flowchart.model.EventParamShape(shape));
         };
         Drawer.prototype.SetMetadata = function (shape, metadata, posX, posY) {
             var svgRoot = this.Paper.canvas;
@@ -483,8 +480,6 @@ var flowchart;
                 throw "No shape.Id defined.";
             if (!this.CheckShapeId(shape.Id))
                 throw "The shapeId [" + shape.Id + "] already exists.";
-            if (this.eventHandler.Notify(flowchart.constants.EventType.BeforeShapeCreated, new flowchart.model.EventParamShape(shape)) === false)
-                return;
             this.drawer.AddShape(shape, posX, posY);
             this.mover.Register(shape);
             this.model.Shapes.push(shape);
@@ -494,7 +489,6 @@ var flowchart;
             shape.RaphaelElement.dblclick(function () {
                 _this.eventHandler.Notify(flowchart.constants.EventType.OnDoubleClick, new flowchart.model.EventParamShape(shape));
             });
-            this.eventHandler.Notify(flowchart.constants.EventType.AfterShapeCreated, new flowchart.model.EventParamShape(shape));
         };
         /**
          * Updates the metadata of the shape.
@@ -565,7 +559,6 @@ var flowchart;
     }());
     flowchart.FlowChart = FlowChart;
 })(flowchart || (flowchart = {}));
-///<reference path="version.ts"/>
 ///<reference path="flowchart/shape/IShape.ts"/>
 ///<reference path="flowchart/constants/ShapeType.ts"/>
 ///<reference path="flowchart/model/BaseElement.ts"/>
@@ -2206,4 +2199,10 @@ var flowchart;
     }());
     flowchart.ShapeMover = ShapeMover;
 })(flowchart || (flowchart = {}));
+/*!
+* TKO.FlowchartDesigner v1.0.1.0
+* License: MIT
+* Created By: Tobias Koller
+* Git: https://github.com/TobiasKoller/tko.flowchartdesigner
+*/ 
 //# sourceMappingURL=tko.flowchart.js.map

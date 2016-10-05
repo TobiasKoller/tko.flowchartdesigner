@@ -105,10 +105,7 @@
             if (!this.CheckShapeId(shape.Id))
                 throw "The shapeId ["+shape.Id+"] already exists.";
 
-
-            if (this.eventHandler.Notify(constants.EventType.BeforeShapeCreated, new model.EventParamShape(shape)) === false)
-                return;
-
+            
             this.drawer.AddShape(shape, posX, posY);
             this.mover.Register(shape);
 
@@ -122,7 +119,6 @@
                 this.eventHandler.Notify(constants.EventType.OnDoubleClick, new model.EventParamShape(shape));
             });
 
-            this.eventHandler.Notify(constants.EventType.AfterShapeCreated, new model.EventParamShape(shape));
 
         }
 
