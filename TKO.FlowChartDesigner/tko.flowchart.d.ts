@@ -330,6 +330,8 @@ declare module flowchart.constants {
         AfterSelect = 10,
         BeforeUnselect = 11,
         AfterUnselect = 12,
+        BeforeShapeCreated = 13,
+        AfterShapeCreated = 14,
     }
 }
 declare module flowchart {

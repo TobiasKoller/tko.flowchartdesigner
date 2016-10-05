@@ -11,6 +11,8 @@ module flowchart.constants {
         BeforeSelect = 9,
         AfterSelect = 10,
         BeforeUnselect = 11,
-        AfterUnselect = 12
+        AfterUnselect = 12,
+        BeforeShapeCreated = 13,
+        AfterShapeCreated = 14
     }
 }

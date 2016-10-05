@@ -87,7 +87,7 @@
 
             return true;
         }
-
+        
         /**
          * Adds a new shape to the flowchart.
          * @param shape Shape of type flowchart.shape.xxx
@@ -105,6 +105,10 @@
             if (!this.CheckShapeId(shape.Id))
                 throw "The shapeId ["+shape.Id+"] already exists.";
 
+
+            if (this.eventHandler.Notify(constants.EventType.BeforeShapeCreated, new model.EventParamShape(shape)) === false)
+                return;
+
             this.drawer.AddShape(shape, posX, posY);
             this.mover.Register(shape);
 
@@ -117,7 +121,9 @@
             shape.RaphaelElement.dblclick(() => {
                 this.eventHandler.Notify(constants.EventType.OnDoubleClick, new model.EventParamShape(shape));
             });
-            
+
+            this.eventHandler.Notify(constants.EventType.AfterShapeCreated, new model.EventParamShape(shape));
+
         }
 
         /**

@@ -99,6 +99,7 @@
     <TypeScriptCompile Include="flowchart\shape\Terminal.ts" />
     <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\raphael\raphael.d.ts" />
+    <TypeScriptCompile Include="version.ts" />
     <TypeScriptCompile Include="_references.ts" />
   </ItemGroup>
   <ItemGroup>

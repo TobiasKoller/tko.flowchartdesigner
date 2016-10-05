@@ -3,6 +3,12 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
+/*!
+* TKO.FlowchartDesigner v1.0.1.0
+* License: MIT
+* Created By: Tobias Koller
+* Git: https://github.com/TobiasKoller/tko.flowchartdesigner
+*/ 
 var flowchart;
 (function (flowchart) {
     var constants;
@@ -477,6 +483,8 @@ var flowchart;
                 throw "No shape.Id defined.";
             if (!this.CheckShapeId(shape.Id))
                 throw "The shapeId [" + shape.Id + "] already exists.";
+            if (this.eventHandler.Notify(flowchart.constants.EventType.BeforeShapeCreated, new flowchart.model.EventParamShape(shape)) === false)
+                return;
             this.drawer.AddShape(shape, posX, posY);
             this.mover.Register(shape);
             this.model.Shapes.push(shape);
@@ -486,6 +494,7 @@ var flowchart;
             shape.RaphaelElement.dblclick(function () {
                 _this.eventHandler.Notify(flowchart.constants.EventType.OnDoubleClick, new flowchart.model.EventParamShape(shape));
             });
+            this.eventHandler.Notify(flowchart.constants.EventType.AfterShapeCreated, new flowchart.model.EventParamShape(shape));
         };
         /**
          * Updates the metadata of the shape.
@@ -556,6 +565,7 @@ var flowchart;
     }());
     flowchart.FlowChart = FlowChart;
 })(flowchart || (flowchart = {}));
+///<reference path="version.ts"/>
 ///<reference path="flowchart/shape/IShape.ts"/>
 ///<reference path="flowchart/constants/ShapeType.ts"/>
 ///<reference path="flowchart/model/BaseElement.ts"/>
@@ -1063,6 +1073,8 @@ var flowchart;
             EventType[EventType["AfterSelect"] = 10] = "AfterSelect";
             EventType[EventType["BeforeUnselect"] = 11] = "BeforeUnselect";
             EventType[EventType["AfterUnselect"] = 12] = "AfterUnselect";
+            EventType[EventType["BeforeShapeCreated"] = 13] = "BeforeShapeCreated";
+            EventType[EventType["AfterShapeCreated"] = 14] = "AfterShapeCreated";
         })(constants.EventType || (constants.EventType = {}));
         var EventType = constants.EventType;
     })(constants = flowchart.constants || (flowchart.constants = {}));

@@ -1,4 +1,4 @@
-﻿
+﻿///<reference path="version.ts"/>
 ///<reference path="flowchart/shape/IShape.ts"/>
 ///<reference path="flowchart/constants/ShapeType.ts"/>
 ///<reference path="flowchart/model/BaseElement.ts"/>
