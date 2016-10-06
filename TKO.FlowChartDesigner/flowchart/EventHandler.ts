@@ -41,7 +41,7 @@
          * @param eventArgs
          */
         Notify(type: constants.EventType, eventArgs: any):boolean {
-
+            
             var c: model.EventListener;
 
             var result: boolean = true;

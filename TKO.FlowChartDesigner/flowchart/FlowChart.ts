@@ -13,11 +13,15 @@
         private selectionManager: SelectionManager;
         private model: model.FlowChartModel;
         private namespaceRegistrator: NamespaceRegistrator;
+        private options: FlowChartOptions;
 
         constructor(canvas: string, options?: FlowChartOptions, width?:number, height?:number) {
 
             if (!options)
                 options = new FlowChartOptions();
+
+            this.options = options;
+            this.eventHandler = new EventHandler();
 
             this.namespaceRegistrator = new NamespaceRegistrator();
             this.model = new model.FlowChartModel();
@@ -26,7 +30,6 @@
 
             options.Init(this.drawer.Paper);
 
-            this.eventHandler = new EventHandler();
             this.selectionManager = new SelectionManager(this.eventHandler, options, this.model);
             this.connector = new ShapeConnector(this.drawer.Paper, options, this.eventHandler);
             this.mover = new ShapeMover(this.connector, this.drawer.Paper, options, this.eventHandler);
@@ -61,17 +64,22 @@
             return this.model.Export();
         }
 
+
+
         /**
          * Loads the given Model into the Flowchart
          * @param model
          */
         Load(model:model.ExportModel) {
 
+            this.options.EnableEvents = false;
+
             this.Clear();
 
             var loader = new ModelLoader(this, this.namespaceRegistrator);
             loader.Load(model);
 
+            this.options.EnableEvents = true;
         }
 
         /**

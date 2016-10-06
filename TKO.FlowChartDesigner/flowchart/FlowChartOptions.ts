@@ -7,6 +7,8 @@ module flowchart {
         ColorSelectedShape: string = "yellow";
         ColorSelectedConnection: string = "yellow";
 
+        EnableEvents: boolean = true;
+
 
         constructor(shapeConnectionType: constants.ConnectionDrawerType=constants.ConnectionDrawerType.Curved) {
             this.ShapeConnectionType = shapeConnectionType;
