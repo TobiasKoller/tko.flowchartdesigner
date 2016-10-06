@@ -71,7 +71,6 @@
             document.body.onmousedown = () => {
                 this.IsMouseHold = false;
                 this.isMouseUp = false;
-                console.log("onmousedown");
                 timeout = setTimeout(() => {
                     this.IsMouseHold = !this.isMouseUp;
                 }, 200); // 
@@ -80,7 +79,6 @@
 
             document.body.onmouseup = () => {
                 clearTimeout(timeout);
-                console.log("onmouseup");
                 this.isMouseUp = true;
             }
             //**
