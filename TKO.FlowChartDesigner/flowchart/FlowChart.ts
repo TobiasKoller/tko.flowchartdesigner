@@ -15,10 +15,16 @@
         private namespaceRegistrator: NamespaceRegistrator;
         private options: FlowChartOptions;
 
-        constructor(canvas: string, options?: FlowChartOptions, width?:number, height?:number) {
+        constructor(htmlElementId: string, options?: FlowChartOptions, width?:number, height?:number) {
 
             if (!options)
                 options = new FlowChartOptions();
+
+            var htmlElement = document.getElementById(htmlElementId);
+            if (!htmlElement)
+                throw "Element with id ["+htmlElementId+"] not found.";
+
+            var wrapperId = this.CreateWrapperDiv(htmlElement, htmlElementId);
 
             this.options = options;
             this.eventHandler = new EventHandler();
@@ -26,7 +32,7 @@
             this.namespaceRegistrator = new NamespaceRegistrator();
             this.model = new model.FlowChartModel();
             this.drawer = new Drawer(options, this.eventHandler);
-            this.drawer.Initialize(canvas, width, height);
+            this.drawer.Initialize(wrapperId, width, height);
 
             options.Init(this.drawer.Paper);
 
@@ -38,6 +44,23 @@
             //    console.log(event);
             //};
 
+        }
+
+        /**
+         * will create a wrapper inside the html-Element.
+         * this will enable the possibility to mix svg and html-elements including z-indexing. (put svg over html-absolute-positioned elements)
+         * @param parentId
+         */
+        private CreateWrapperDiv(parentElement:HTMLElement, parentId:string):string {
+
+            var wrapperId = "__wrapper__" + parentId;
+            var wrapperDiv: HTMLDivElement = document.createElement("div");
+            wrapperDiv.id = wrapperId;
+            wrapperDiv.style.cssText = "width:100%;height: 100%;margin: 0;padding: 0;position:relative;z-index:1000;border:1px solid blue";
+
+            parentElement.appendChild(wrapperDiv);
+
+            return wrapperId;
         }
 
         /**

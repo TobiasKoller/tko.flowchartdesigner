@@ -1,0 +1,169 @@
+﻿html, body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+
+span {
+    font-style: italic;
+}
+
+ .flowchart_canvas{
+    border: solid 1px #333;
+    background-color: #e0e0e0;
+     width: 100%;
+     height: 3000px;
+}
+
+ /******************************Shape terminal******************************/
+ .shape_terminal_background {
+    width: 100%;
+    height: 100%;
+    background-color: yellowgreen;
+    border-radius: 20px;
+    padding-left:0;
+ }
+
+ .shape_terminal_content {
+     /*Center content*/
+    height: 100%;
+    display: -webkit-flexbox;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-align: center;
+    -ms-flex-align: center;
+    -webkit-align-items: center;
+    align-items: center;
+    justify-content: center;
+
+ }
+
+ /******************************Shape process******************************/
+  .shape_process_background {
+     width: 100%;
+     height: 100%;
+     background-color: white
+ }
+
+  .shape_process_content {
+       height: 100%;
+    display: -webkit-flexbox;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-align: center;
+    -ms-flex-align: center;
+    -webkit-align-items: center;
+    align-items: center;
+    justify-content: center;
+  }
+
+  
+  /******************************Shape decision******************************/
+ .shape_decision_background {
+    
+      background: white;
+/* Rotate */
+    -webkit-transform: rotate(-45deg);
+    -moz-transform: rotate(-45deg);
+    -ms-transform: rotate(-45deg);
+    -o-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+/* Rotate Origin */
+    -webkit-transform-origin: 0 100%;
+    -moz-transform-origin: 0 100%;
+    -ms-transform-origin: 0 100%;
+    -o-transform-origin: 0 100%;
+    transform-origin: 0 100%;
+    /*margin: 29px 0 0px 49px;*/
+
+	  /*background-color: white;
+     -webkit-box-sizing: content-box;
+	  -moz-box-sizing: content-box;
+	  box-sizing: content-box;
+	  width: 40px;
+	  height: 40px;
+	  border: none;
+	  font: normal 100%/normal Arial, Helvetica, sans-serif;
+	  color: rgba(0,0,0,1);
+	  -o-text-overflow: clip;
+	  text-overflow: clip;
+	  -webkit-transform: rotateZ(-45deg)   ;
+	  transform: rotateZ(-45deg)   ;
+	  -webkit-transform-origin: 0 100% 0deg;
+	  transform-origin: 0 100% 0deg;*/
+
+      
+	  /*margin: 3px 0 0 30px;*/
+ }
+
+ .shape_decision_content {
+
+    /*Center content*/
+    -webkit-transform: rotate(-45deg);
+    -moz-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    -o-transform: rotate(45deg);
+    transform: rotate(45deg);
+	
+     height: 100%;
+    <!-- display: -webkit-flexbox;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex; -->
+    -webkit-flex-align: center;
+    -ms-flex-align: center;
+    -webkit-align-items: center;
+    align-items: center;
+    justify-content: center;
+
+
+       /*Center content*/
+    /*set text in the right angle*/
+    /*-webkit-transform: rotateZ(45deg)   ;
+    transform: rotateZ(45deg)   ;
+    background-color:transparent;
+    height: 100%;
+    display: -webkit-flexbox;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-align: center;
+    -ms-flex-align: center;
+    -webkit-align-items: center;
+    align-items: center;
+    justify-content: center;*/
+
+    /*height: 100%;
+    display: -webkit-flexbox;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-align: center;
+    -ms-flex-align: center;
+    -webkit-align-items: center;
+    align-items: center;
+    justify-content: center;*/
+ }
+
+ /******************************Shape connection-points******************************/
+ .connection_point_incoming { /*Only background-color supported for this connection-point shapes*/
+     background-color: white;
+ }
+
+ .connection_point_outgoing_true_success {/*Only background-color supported for this connection-point shapes*/
+     background-color: green;
+ }
+
+ .connection_point_outgoing_false_error {/*Only background-color supported for this connection-point shapes*/
+     background-color: red;
+ }
+
+
+ /********************************Tests*********************************************/
+ .test_shape_process_content {
+     background-color: yellow;
+ }

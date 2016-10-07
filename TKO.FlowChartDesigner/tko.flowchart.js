@@ -65,8 +65,11 @@ var flowchart;
                 var list = [
                     this.RaphaelElement
                 ];
-                if (this.RaphaelMetadata) {
-                    list.push(this.RaphaelMetadata);
+                //if (this.RaphaelMetadata) {
+                //    list.push(this.RaphaelMetadata);
+                //}
+                if (this.MetadataHtmlElement) {
+                    list.push(this.MetadataHtmlElement);
                 }
                 for (var _i = 0, _a = this.ConnectionPoints; _i < _a.length; _i++) {
                     var p = _a[_i];
@@ -94,6 +97,9 @@ var flowchart;
             };
             ShapeBase.prototype.OnMove = function (x, y) {
                 var elements = this.GetContainingElements();
+                var metadataElement = this.MetadataHtmlElement;
+                this.MetadataHtmlElement.style.left = (metadataElement.ox + x) + "px";
+                this.MetadataHtmlElement.style.top = (metadataElement.oy + y) + "px";
                 for (var _i = 0, elements_2 = elements; _i < elements_2.length; _i++) {
                     var element = elements_2[_i];
                     var newX = element.ox + x;
@@ -160,8 +166,10 @@ var flowchart;
             ShapeBase.prototype.Delete = function () {
                 if (this.RaphaelElement)
                     this.RaphaelElement.remove();
-                if (this.RaphaelMetadata)
-                    this.RaphaelMetadata.remove();
+                //if(this.RaphaelMetadata)
+                //    this.RaphaelMetadata.remove();
+                if (this.MetadataHtmlElement)
+                    this.MetadataHtmlElement.remove();
                 var cp;
                 for (var _i = 0, _a = this.ConnectionPoints; _i < _a.length; _i++) {
                     cp = _a[_i];
@@ -327,10 +335,11 @@ var flowchart;
             this.options = options;
             this.eventHandler = eventHandler;
         }
-        Drawer.prototype.Initialize = function (canvasHtmlName, width, height) {
+        Drawer.prototype.Initialize = function (canvasContainerId, width, height) {
             if (width === void 0) { width = 0; }
             if (height === void 0) { height = 0; }
-            this.Paper = Raphael(canvasHtmlName, 0, 0);
+            this.CanvasContainerId = canvasContainerId;
+            this.Paper = Raphael(canvasContainerId, 0, 0);
             var nWidth = width !== 0 ? width : '100%';
             var nHeight = height !== 0 ? height : '100%';
             this.Paper.setSize(nWidth, nHeight);
@@ -346,8 +355,9 @@ var flowchart;
                 throw "Shape.Height is not a valid number.";
             if (!this.eventHandler.Notify(flowchart.constants.EventType.BeforeShapeCreated, new flowchart.model.EventParamShape(shape)))
                 return;
-            this.SetMetadata(shape, shape.Metadata, posX, posY);
+            //this.SetMetadata(shape,shape.Metadata, posX, posY);
             shape.RaphaelElement = shape.DrawShape(this.Paper, posX, posY);
+            this.SetMetadata(shape, shape.Metadata, posX, posY);
             shape.RaphaelElement.toFront();
             //set reference from the raphaelobject to the shape
             shape.SetRaphaelShapeReference();
@@ -360,39 +370,68 @@ var flowchart;
             this.eventHandler.Notify(flowchart.constants.EventType.AfterShapeCreated, new flowchart.model.EventParamShape(shape));
         };
         Drawer.prototype.SetMetadata = function (shape, metadata, posX, posY) {
-            var svgRoot = this.Paper.canvas;
-            var metadataElement = document.createElementNS("http://www.w3.org/2000/svg", "foreignObject");
-            //TODO http://stackoverflow.com/questions/13848039/svg-foreignobject-contents-do-not-display-unless-plain-text
-            //metadata.innerHTML = "<i class='fa fa-sitemap'></i>";
-            metadataElement.setAttributeNS(null, "width", String(shape.Width));
-            metadataElement.setAttributeNS(null, "height", String(shape.Height));
-            metadataElement.setAttributeNS(null, "x", String(posX));
-            metadataElement.setAttributeNS(null, "y", String(posY));
-            metadataElement.setAttributeNS(null, "style", "padding:1px");
-            //var x = document.createElementNS("http://www.w3.org/1999/xhtml", "div");
-            //x.setAttribute("xmlns", "http://www.w3.org/1999/xhtml");
-            //metadataElement.appendChild(x);
-            //we first add the metadata, that it will be behind the real raphaeljs object
-            //when the raphaeljs element is transparent we see the metadata shining through
-            //and still have all drag&drop functionallity of the raphaeljs-element.
-            svgRoot.appendChild(metadataElement); //1st
-            shape.RaphaelMetadata = metadataElement;
-            this.UpdateMetadata(shape, metadata);
+            // shape.RaphaelMetadata = metadataElement;
+            var canvasContainer = document.getElementById(this.CanvasContainerId);
+            var svgOffset = document.getElementsByTagName("svg")[0].getBoundingClientRect();
+            var bodyOffset = canvasContainer.parentElement.parentElement.getBoundingClientRect();
+            var parentParent = canvasContainer.parentElement.parentElement;
+            var ppTop = parentParent.offsetTop;
+            var ppLeft = parentParent.offsetLeft;
+            var relativeX = svgOffset.left - bodyOffset.left + ppLeft;
+            var relativeY = (svgOffset.top - bodyOffset.top) + ppTop;
+            var absoluteX = relativeX + posX;
+            var absoluteY = relativeY + posY;
+            var metadataDiv = document.createElement("div");
+            metadataDiv.style.cssText = "width:" + shape.Width + "px;" +
+                "height:" + shape.Height + "px;" +
+                "background-color:red; " +
+                "position:absolute; " +
+                "left:" + absoluteX + "px;" +
+                "top:" + absoluteY + "px;" +
+                "z-index:1";
+            //metadataDiv.relativeX = relativeX;
+            //metadataDiv.relativeY = relativeY;
+            metadataDiv.setAttribute("x", absoluteX);
+            metadataDiv.setAttribute("y", absoluteY);
+            canvasContainer.parentElement.appendChild(metadataDiv);
+            shape.MetadataHtmlElement = metadataDiv;
         };
+        //SetMetadata(shape: shape.ShapeBase, metadata: shape.metadata.IShapeMetadata, posX:number, posY:number) {
+        //    var svgRoot = this.Paper.canvas;
+        //    var metadataElement: SVGForeignObjectElement = document.createElementNS("http://www.w3.org/2000/svg", "foreignObject");
+        //    //TODO http://stackoverflow.com/questions/13848039/svg-foreignobject-contents-do-not-display-unless-plain-text
+        //     //metadata.innerHTML = "<i class='fa fa-sitemap'></i>";
+        //    metadataElement.setAttributeNS(null, "width", String(shape.Width));
+        //    metadataElement.setAttributeNS(null, "height", String(shape.Height));
+        //    metadataElement.setAttributeNS(null, "x", String(posX));
+        //    metadataElement.setAttributeNS(null, "y", String(posY));
+        //    metadataElement.setAttributeNS(null, "style", "padding:1px");
+        //    //var x = document.createElementNS("http://www.w3.org/1999/xhtml", "div");
+        //    //x.setAttribute("xmlns", "http://www.w3.org/1999/xhtml");
+        //    //metadataElement.appendChild(x);
+        //    //we first add the metadata, that it will be behind the real raphaeljs object
+        //    //when the raphaeljs element is transparent we see the metadata shining through
+        //    //and still have all drag&drop functionallity of the raphaeljs-element.
+        //    svgRoot.appendChild(metadataElement);//1st
+        //    shape.RaphaelMetadata = metadataElement;
+        //    this.UpdateMetadata(shape, metadata);
+        //}
         Drawer.prototype.UpdateMetadata = function (shape, metadata) {
             if (!shape)
                 throw "UpdateMetadata: Shape is null.";
-            if (!shape.RaphaelMetadata)
-                throw "UpdateMetadata: Shape.RapahelMetadata is null";
+            if (!shape.MetadataHtmlElement)
+                throw "UpdateMetadata: Shape.MetadataHtmlElement is null";
+            //if (!shape.RaphaelMetadata)
+            //    throw "UpdateMetadata: Shape.RapahelMetadata is null";
             var div = shape.GetMetadataDiv();
             var metaHtml = metadata.GetHtml();
             metaHtml.classList.add(shape.CssContentClass);
             div.appendChild(metaHtml);
             //metaHtml.appendChild(div);
-            for (var i = shape.RaphaelMetadata.childNodes.length - 1; i >= 0; i--) {
-                shape.RaphaelMetadata.removeChild(shape.RaphaelMetadata.childNodes[i]);
+            for (var i = shape.MetadataHtmlElement.childNodes.length - 1; i >= 0; i--) {
+                shape.MetadataHtmlElement.removeChild(shape.MetadataHtmlElement.childNodes[i]);
             }
-            shape.RaphaelMetadata.appendChild(div);
+            shape.MetadataHtmlElement.appendChild(div);
             //shape.RaphaelMetadata.appendChild(metaHtml); //.innerHTML = metaHtml.outerHTML + div.outerHTML;
             //shape.RaphaelMetadata.appendChild(div);
         };
@@ -407,15 +446,19 @@ var flowchart;
      * Handles the whole flowchart.
      */
     var FlowChart = (function () {
-        function FlowChart(canvas, options, width, height) {
+        function FlowChart(htmlElementId, options, width, height) {
             if (!options)
                 options = new flowchart.FlowChartOptions();
+            var htmlElement = document.getElementById(htmlElementId);
+            if (!htmlElement)
+                throw "Element with id [" + htmlElementId + "] not found.";
+            var wrapperId = this.CreateWrapperDiv(htmlElement, htmlElementId);
             this.options = options;
             this.eventHandler = new flowchart.EventHandler();
             this.namespaceRegistrator = new flowchart.NamespaceRegistrator();
             this.model = new flowchart.model.FlowChartModel();
             this.drawer = new flowchart.Drawer(options, this.eventHandler);
-            this.drawer.Initialize(canvas, width, height);
+            this.drawer.Initialize(wrapperId, width, height);
             options.Init(this.drawer.Paper);
             this.selectionManager = new flowchart.SelectionManager(this.eventHandler, options, this.model);
             this.connector = new flowchart.ShapeConnector(this.drawer.Paper, options, this.eventHandler);
@@ -424,6 +467,19 @@ var flowchart;
             //    console.log(event);
             //};
         }
+        /**
+         * will create a wrapper inside the html-Element.
+         * this will enable the possibility to mix svg and html-elements including z-indexing. (put svg over html-absolute-positioned elements)
+         * @param parentId
+         */
+        FlowChart.prototype.CreateWrapperDiv = function (parentElement, parentId) {
+            var wrapperId = "__wrapper__" + parentId;
+            var wrapperDiv = document.createElement("div");
+            wrapperDiv.id = wrapperId;
+            wrapperDiv.style.cssText = "width:100%;height: 100%;margin: 0;padding: 0;position:relative;z-index:1000;border:1px solid blue";
+            parentElement.appendChild(wrapperDiv);
+            return wrapperId;
+        };
         /**
          * Removes everything from the flowchart and the underlying model.
          */

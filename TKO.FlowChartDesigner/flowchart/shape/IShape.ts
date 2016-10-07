@@ -8,7 +8,8 @@
         CssBackgroundClass: string;
         CssContentClass: string;
         RaphaelElement: RaphaelElement;
-        RaphaelMetadata: SVGForeignObjectElement;
+        //RaphaelMetadata: SVGForeignObjectElement;
+        MetadataHtmlElement: HTMLDivElement;
         RaphaelAttr: any;
         Metadata: shape.metadata.IShapeMetadata;
         ParentShape: ShapeBase;

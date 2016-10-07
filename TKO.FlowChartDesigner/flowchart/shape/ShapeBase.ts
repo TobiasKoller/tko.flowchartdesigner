@@ -7,7 +7,8 @@
         CssContentClass: string;
         CssBackgroundClass:string;
         RaphaelElement: RaphaelElement;
-        RaphaelMetadata: SVGForeignObjectElement;
+        //RaphaelMetadata: SVGForeignObjectElement;
+        MetadataHtmlElement:HTMLDivElement;
         RaphaelAttr: any;
         Metadata: shape.metadata.IShapeMetadata;
         ParentShape: ShapeBase;
@@ -33,8 +34,12 @@
                 this.RaphaelElement
             ];
 
-            if (this.RaphaelMetadata) {
-                list.push(this.RaphaelMetadata);
+            //if (this.RaphaelMetadata) {
+            //    list.push(this.RaphaelMetadata);
+            //}
+
+            if (this.MetadataHtmlElement) {
+                list.push(this.MetadataHtmlElement);
             }
 
             for (var p of this.ConnectionPoints) {
@@ -65,10 +70,14 @@
         OnMove(x: number, y: number) {
             var elements = this.GetContainingElements();
 
+            var metadataElement: any = this.MetadataHtmlElement;
+            this.MetadataHtmlElement.style.left = (metadataElement.ox+x)+"px";
+            this.MetadataHtmlElement.style.top = (metadataElement.oy+y)+"px";
+
             for (var element of elements) {
                 var newX = element.ox + x;
                 var newY = element.oy + y;
-
+                
                 if (element.attr) {
                     //element.attr(att);
                     element.data("shape").SetPosition(newX, newY);
@@ -142,8 +151,11 @@
             if(this.RaphaelElement)
                 this.RaphaelElement.remove();
 
-            if(this.RaphaelMetadata)
-                this.RaphaelMetadata.remove();
+            //if(this.RaphaelMetadata)
+            //    this.RaphaelMetadata.remove();
+
+            if (this.MetadataHtmlElement)
+                this.MetadataHtmlElement.remove();
 
             var cp: ConnectionPoint;
             for (cp of this.ConnectionPoints) {

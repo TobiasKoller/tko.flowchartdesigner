@@ -7,7 +7,7 @@ declare module flowchart.shape {
         CssBackgroundClass: string;
         CssContentClass: string;
         RaphaelElement: RaphaelElement;
-        RaphaelMetadata: SVGForeignObjectElement;
+        MetadataHtmlElement: HTMLDivElement;
         RaphaelAttr: any;
         Metadata: shape.metadata.IShapeMetadata;
         ParentShape: ShapeBase;
@@ -54,7 +54,7 @@ declare module flowchart.shape {
         CssContentClass: string;
         CssBackgroundClass: string;
         RaphaelElement: RaphaelElement;
-        RaphaelMetadata: SVGForeignObjectElement;
+        MetadataHtmlElement: HTMLDivElement;
         RaphaelAttr: any;
         Metadata: shape.metadata.IShapeMetadata;
         ParentShape: ShapeBase;
@@ -115,9 +115,10 @@ declare module flowchart {
     class Drawer {
         private options;
         private eventHandler;
+        CanvasContainerId: string;
         Paper: any;
         constructor(options: FlowChartOptions, eventHandler: any);
-        Initialize(canvasHtmlName: string, width?: number, height?: number): void;
+        Initialize(canvasContainerId: string, width?: number, height?: number): void;
         AddShape(shape: shape.ShapeBase, posX: number, posY: number): void;
         SetMetadata(shape: shape.ShapeBase, metadata: shape.metadata.IShapeMetadata, posX: number, posY: number): void;
         UpdateMetadata(shape: shape.ShapeBase, metadata: shape.metadata.IShapeMetadata): void;
@@ -136,7 +137,13 @@ declare module flowchart {
         private model;
         private namespaceRegistrator;
         private options;
-        constructor(canvas: string, options?: FlowChartOptions, width?: number, height?: number);
+        constructor(htmlElementId: string, options?: FlowChartOptions, width?: number, height?: number);
+        /**
+         * will create a wrapper inside the html-Element.
+         * this will enable the possibility to mix svg and html-elements including z-indexing. (put svg over html-absolute-positioned elements)
+         * @param parentId
+         */
+        private CreateWrapperDiv(parentElement, parentId);
         /**
          * Removes everything from the flowchart and the underlying model.
          */
