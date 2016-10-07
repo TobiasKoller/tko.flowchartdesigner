@@ -58,11 +58,9 @@ module flowchart {
 
         SetMetadata(shape: shape.ShapeBase, metadata: shape.metadata.IShapeMetadata, posX: number, posY: number) {
            // shape.RaphaelMetadata = metadataElement;
-
-
+            
             var canvasContainer = document.getElementById(this.CanvasContainerId);
-
-
+            
             var svgOffset = document.getElementsByTagName("svg")[0].getBoundingClientRect();
             var bodyOffset = canvasContainer.parentElement.parentElement.getBoundingClientRect();
 
@@ -77,8 +75,15 @@ module flowchart {
             var absoluteY = relativeY+ posY;
 
 
+            var metadataDiv = document.createElement("div");
+            var x = "";
+            var y = x;
+            var z = x;
+            var z1 = z;
+
+            //metadataDiv.className = shape.CssBackgroundClass;
+            //metadataDiv.classList.add(shape.CssBackgroundClass);
             
-            var metadataDiv:any = document.createElement("div");
             metadataDiv.style.cssText =     "width:" + shape.Width + "px;" +
                                             "height:" + shape.Height + "px;" +
                                             "background-color:red; " +
@@ -87,13 +92,15 @@ module flowchart {
                                             "top:"+ absoluteY+"px;"+
                                             "z-index:1";
 
-            //metadataDiv.relativeX = relativeX;
-            //metadataDiv.relativeY = relativeY;
             metadataDiv.setAttribute("x",absoluteX);
             metadataDiv.setAttribute("y", absoluteY);
+            
+            
+
+            shape.MetadataHtmlElement = metadataDiv;
 
             canvasContainer.parentElement.appendChild(metadataDiv);
-            shape.MetadataHtmlElement = metadataDiv;
+            this.UpdateMetadata(shape, metadata);
         }
 
         //SetMetadata(shape: shape.ShapeBase, metadata: shape.metadata.IShapeMetadata, posX:number, posY:number) {

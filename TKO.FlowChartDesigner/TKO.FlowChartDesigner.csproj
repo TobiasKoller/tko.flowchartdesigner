@@ -23,12 +23,16 @@
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="css\app.css" />
+    <Content Include="css\tko.flowchartdesigner.css" />
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="currentDevelopment.html" />
     <Content Include="demo\demo1.html" />
+    <Content Include="dist\tko.flowchartdesigner.css" />
+    <Content Include="dist\tko.flowchartdesigner.js" />
+    <Content Include="dist\tko.flowchartdesigner.min.js" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="packages.config" />
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
@@ -39,6 +43,9 @@
     <Content Include="Content\bootstrap.css.map" />
     <Content Include="Content\bootstrap-theme.min.css.map" />
     <Content Include="Content\bootstrap-theme.css.map" />
+    <Content Include="tko.flowchartdesigner.min.js">
+      <DependentUpon>tko.flowchartdesigner.js</DependentUpon>
+    </Content>
     <None Include="bundleconfig.json" />
     <None Include="Scripts\jquery-1.9.1.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -47,10 +54,7 @@
     <Content Include="Scripts\jquery-1.9.1.min.js" />
     <Content Include="Scripts\raphael-min.js" />
     <Content Include="Scripts\raphael.js" />
-    <Content Include="tko.flowchart.js" />
-    <Content Include="tko.flowchart.min.js">
-      <DependentUpon>tko.flowchart.js</DependentUpon>
-    </Content>
+    <Content Include="tko.flowchartdesigner.js" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="common\DomHelper.ts" />

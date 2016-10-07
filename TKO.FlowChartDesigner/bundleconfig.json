@@ -1,13 +1,18 @@
 [
-    {
-        "outputFileName": "tko.flowchart.min.js",
-        "inputFiles": [
-            "tko.flowchart.js"
-        ],
-        
-        "minify": {
-            "enabled": true,
-            "preserveImportantComments": true
-        }
+  {
+    "outputFileName": "tko.flowchart.min.js",
+    "inputFiles": [
+      "tko.flowchart.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "preserveImportantComments": true
     }
+  },
+  {
+    "outputFileName": "tko.flowchartdesigner.min.js",
+    "inputFiles": [
+      "tko.flowchartdesigner.js"
+    ]
+  }
 ]
