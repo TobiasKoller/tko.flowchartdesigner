@@ -70,14 +70,14 @@
                 var shape = null;
                 switch (shapeType) {
                     case "terminal":
-                        shape = new flowchart.shape.Terminal(shapeId, width, height, m);
+                        shape = new flowchart.shape.Terminal(shapeId, width, height, metadata);
                         break;
                     case "process":
-                        shape = new flowchart.shape.Process(shapeId, width, height, m);
+                        shape = new flowchart.shape.Process(shapeId, width, height, metadata);
                         break;
 
                     case "decision":
-                        shape = new flowchart.shape.Decision(shapeId, width, height, m);
+                        shape = new flowchart.shape.Decision(shapeId, width, height, metadata);
                         break;
                     default:
                         throw "No ShapeType defined";
