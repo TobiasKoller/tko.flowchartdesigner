@@ -93,7 +93,8 @@
             for (var i = 0; i < svgs.length; i++) {
                 var svg: any = svgs[i];
 
-                if (svg && svg.parentElement && svg.parentElement.id == parentId) {
+                var p = svg.parentElement || svg.parentNode;
+                if (svg && p && p.id == parentId) {
                     svg.id = "__svg__" + canvasId;
                 }
             }
