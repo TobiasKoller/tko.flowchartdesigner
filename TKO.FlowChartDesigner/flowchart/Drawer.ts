@@ -5,23 +5,30 @@ module flowchart {
     
     export class Drawer {
 
-        CanvasContainerId:string;
+        WrapperContainerId: string;
+        CanvasContainerId: string;
+        SvgContainerId: string;
         Paper: any;
 
         constructor(private options: FlowChartOptions, private eventHandler) {
             
         }
 
-        Initialize(canvasContainerId: string, width:number=0, height:number=0) {
+        Initialize(canvasContainerId:string, wrapperCanvasContainerId: string, width:number=0, height:number=0) {
 
             this.CanvasContainerId = canvasContainerId;
-            this.Paper = Raphael(canvasContainerId, 0, 0);
+            this.WrapperContainerId = wrapperCanvasContainerId;
+            this.SvgContainerId = "__svg__" + canvasContainerId;
+
+            this.Paper = Raphael(wrapperCanvasContainerId, 0, 0);
 
             var nWidth = width !== 0 ? width : '100%';
             var nHeight = height !== 0 ? height : '100%';
 
             this.Paper.setSize(nWidth, nHeight);
         }
+
+  
 
         AddShape(shape: shape.ShapeBase, posX: number, posY: number) {
 
@@ -75,7 +82,8 @@ module flowchart {
          * checks the current position of the canvas. if it has moved, we need to reposition the absolute divs from each shape.
          */
         UpdateWrapperPosition(shapes: shape.ShapeBase[]) {
-            var canvasContainer = document.getElementById(this.CanvasContainerId);
+
+            var canvasContainer = document.getElementById(this.WrapperContainerId);
             var relativePos = this.GetRelativePos();
 
             var origX = canvasContainer.getAttribute("relativeX");
@@ -105,10 +113,12 @@ module flowchart {
          * this is important because we have to absolutly position the divs.
          */
         private GetRelativePos() {
-            var canvasContainer = document.getElementById(this.CanvasContainerId);
+
+            var canvasContainer = document.getElementById(this.WrapperContainerId);
 
 
-            var svgOffset = document.getElementsByTagName("svg")[0].getBoundingClientRect();
+            var svgOffset = document.getElementById(this.SvgContainerId).getBoundingClientRect();
+            //var svgOffset = document.getElementsByTagName("svg")[0].getBoundingClientRect();
             var bodyOffset = canvasContainer.parentElement.parentElement.getBoundingClientRect();
 
             var parentParent: any = canvasContainer.parentElement.parentElement;
@@ -144,7 +154,7 @@ module flowchart {
         SetMetadata(shape: shape.ShapeBase, metadata: shape.metadata.IShapeMetadata, posX: number, posY: number) {
            // shape.RaphaelMetadata = metadataElement;
             
-            var canvasContainer = document.getElementById(this.CanvasContainerId);
+            var canvasContainer = document.getElementById(this.WrapperContainerId);
 
             var relativePos = this.GetRelativePos();
 

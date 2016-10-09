@@ -107,10 +107,12 @@ declare module flowchart {
     class Drawer {
         private options;
         private eventHandler;
+        WrapperContainerId: string;
         CanvasContainerId: string;
+        SvgContainerId: string;
         Paper: any;
         constructor(options: FlowChartOptions, eventHandler: any);
-        Initialize(canvasContainerId: string, width?: number, height?: number): void;
+        Initialize(canvasContainerId: string, wrapperCanvasContainerId: string, width?: number, height?: number): void;
         AddShape(shape: shape.ShapeBase, posX: number, posY: number): void;
         /**
          * checks the current position of the canvas. if it has moved, we need to reposition the absolute divs from each shape.
@@ -158,6 +160,12 @@ declare module flowchart {
          * @param parentId
          */
         private CreateWrapperDiv(parentElement, parentId);
+        /**
+         * sets an individual id for the svg that we can easily access it.
+         * @param parentId
+         * @param canvasId
+         */
+        SetSvgId(parentId: string, canvasId: any): void;
         /**
          * Removes everything from the flowchart and the underlying model.
          */

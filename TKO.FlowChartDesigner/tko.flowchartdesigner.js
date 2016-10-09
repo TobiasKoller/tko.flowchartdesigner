@@ -274,11 +274,13 @@ var flowchart;
             this.options = options;
             this.eventHandler = eventHandler;
         }
-        Drawer.prototype.Initialize = function (canvasContainerId, width, height) {
+        Drawer.prototype.Initialize = function (canvasContainerId, wrapperCanvasContainerId, width, height) {
             if (width === void 0) { width = 0; }
             if (height === void 0) { height = 0; }
             this.CanvasContainerId = canvasContainerId;
-            this.Paper = Raphael(canvasContainerId, 0, 0);
+            this.WrapperContainerId = wrapperCanvasContainerId;
+            this.SvgContainerId = "__svg__" + canvasContainerId;
+            this.Paper = Raphael(wrapperCanvasContainerId, 0, 0);
             var nWidth = width !== 0 ? width : '100%';
             var nHeight = height !== 0 ? height : '100%';
             this.Paper.setSize(nWidth, nHeight);
@@ -325,7 +327,7 @@ var flowchart;
          * checks the current position of the canvas. if it has moved, we need to reposition the absolute divs from each shape.
          */
         Drawer.prototype.UpdateWrapperPosition = function (shapes) {
-            var canvasContainer = document.getElementById(this.CanvasContainerId);
+            var canvasContainer = document.getElementById(this.WrapperContainerId);
             var relativePos = this.GetRelativePos();
             var origX = canvasContainer.getAttribute("relativeX");
             var origY = canvasContainer.getAttribute("relativeY");
@@ -348,8 +350,9 @@ var flowchart;
          * this is important because we have to absolutly position the divs.
          */
         Drawer.prototype.GetRelativePos = function () {
-            var canvasContainer = document.getElementById(this.CanvasContainerId);
-            var svgOffset = document.getElementsByTagName("svg")[0].getBoundingClientRect();
+            var canvasContainer = document.getElementById(this.WrapperContainerId);
+            var svgOffset = document.getElementById(this.SvgContainerId).getBoundingClientRect();
+            //var svgOffset = document.getElementsByTagName("svg")[0].getBoundingClientRect();
             var bodyOffset = canvasContainer.parentElement.parentElement.getBoundingClientRect();
             var parentParent = canvasContainer.parentElement.parentElement;
             var ppTop = parentParent.offsetTop;
@@ -376,7 +379,7 @@ var flowchart;
         };
         Drawer.prototype.SetMetadata = function (shape, metadata, posX, posY) {
             // shape.RaphaelMetadata = metadataElement;
-            var canvasContainer = document.getElementById(this.CanvasContainerId);
+            var canvasContainer = document.getElementById(this.WrapperContainerId);
             var relativePos = this.GetRelativePos();
             canvasContainer.setAttribute("relativeX", relativePos.x);
             canvasContainer.setAttribute("relativeY", relativePos.y);
@@ -436,7 +439,8 @@ var flowchart;
             this.namespaceRegistrator = new flowchart.NamespaceRegistrator();
             this.model = new flowchart.model.FlowChartModel();
             this.drawer = new flowchart.Drawer(options, this.eventHandler);
-            this.drawer.Initialize(wrapperId, width, height);
+            this.drawer.Initialize(htmlElementId, wrapperId, width, height);
+            this.SetSvgId(wrapperId, htmlElementId);
             options.Init(this.drawer.Paper);
             this.selectionManager = new flowchart.SelectionManager(this.eventHandler, options, this.model);
             this.connector = new flowchart.ShapeConnector(this.drawer.Paper, options, this.eventHandler);
@@ -468,6 +472,20 @@ var flowchart;
             wrapperDiv.style.cssText = "width:100%;height: 100%;margin: 0;padding: 0;position:relative;z-index:1000;border:1px solid blue";
             parentElement.appendChild(wrapperDiv);
             return wrapperId;
+        };
+        /**
+         * sets an individual id for the svg that we can easily access it.
+         * @param parentId
+         * @param canvasId
+         */
+        FlowChart.prototype.SetSvgId = function (parentId, canvasId) {
+            var svgs = document.getElementsByTagName("svg");
+            for (var i = 0; i < svgs.length; i++) {
+                var svg = svgs[i];
+                if (svg && svg.parentElement && svg.parentElement.id == parentId) {
+                    svg.id = "__svg__" + canvasId;
+                }
+            }
         };
         /**
          * Removes everything from the flowchart and the underlying model.
@@ -2008,7 +2026,7 @@ var flowchart;
     flowchart.ShapeMover = ShapeMover;
 })(flowchart || (flowchart = {}));
 /*!
-* TKO.FlowchartDesigner v1.0.2.0
+* TKO.FlowchartDesigner v1.0.3.0
 * License: MIT
 * Created By: Tobias Koller
 * Git: https://github.com/TobiasKoller/tko.flowchartdesigner

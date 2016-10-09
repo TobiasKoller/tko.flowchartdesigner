@@ -25,6 +25,7 @@
                 throw "Element with id ["+htmlElementId+"] not found.";
 
             var wrapperId = this.CreateWrapperDiv(htmlElement, htmlElementId);
+            
 
             this.options = options;
             this.eventHandler = new EventHandler();
@@ -32,7 +33,9 @@
             this.namespaceRegistrator = new NamespaceRegistrator();
             this.model = new model.FlowChartModel();
             this.drawer = new Drawer(options, this.eventHandler);
-            this.drawer.Initialize(wrapperId, width, height);
+            this.drawer.Initialize(htmlElementId, wrapperId, width, height);
+
+            this.SetSvgId(wrapperId, htmlElementId);
 
             options.Init(this.drawer.Paper);
 
@@ -48,6 +51,8 @@
             //};
 
         }
+
+
 
         /**
          * checks the position of the divs and updates them if anything moved on the page.
@@ -74,6 +79,25 @@
             parentElement.appendChild(wrapperDiv);
 
             return wrapperId;
+        }
+
+        /**
+         * sets an individual id for the svg that we can easily access it.
+         * @param parentId
+         * @param canvasId
+         */
+        SetSvgId(parentId: string, canvasId) {
+
+            var svgs = document.getElementsByTagName("svg");
+
+            for (var i = 0; i < svgs.length; i++) {
+                var svg: any = svgs[i];
+
+                if (svg && svg.parentElement && svg.parentElement.id == parentId) {
+                    svg.id = "__svg__" + canvasId;
+                }
+            }
+
         }
 
         /**

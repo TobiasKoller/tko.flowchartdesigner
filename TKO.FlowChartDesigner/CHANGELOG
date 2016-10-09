@@ -1,5 +1,8 @@
 ﻿
 2016-10-09
+
+v1.0.3.0
+- adding unique id to the svg that it can easly get accessed by id and to be sure that we operate on the correct one ;)
 v1.0.2.0
 - removed all foreignobjects, because they are not well supported in some browsers (chrome, ie,...).
 - workedaround the foreignobject-issues by absolute positioning divs and put them behind the svg-items (z-indexing)
