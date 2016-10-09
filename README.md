@@ -81,9 +81,13 @@ everything else can be changed within the css-file tko.flowchartdesigner.css.
     var s5 = new flowchart.shape.Terminal("5", 150, 50, "End");
 ```
 **Parameter**
+
 1. unique id.
+
 2. width in px
+
 3. height in px
+
 4. Simple text or HTML-Text
 
 ###Add ConnectionPoints to the shapes
@@ -104,7 +108,9 @@ everything else can be changed within the css-file tko.flowchartdesigner.css.
 ```
 Every shape can have up to 4 connection-points. they are located left,top,right,bottom.
 **Parameter**
+
 1. Type-Enum, if its an incoming,outgoing(succes) or outgoing(error)
+
 2. Position-Enum, where to add the connectionpoint (left,top,right,bottom)
 
 ###Add Shapes to the canvas
@@ -118,8 +124,11 @@ Every shape can have up to 4 connection-points. they are located left,top,right,
 ```
 Adds the shape to the canvas.
 **Parameter**
+
 1. the shape-object we created above
+
 2. PosX in px
+
 3. PosY in px
 
 ##4. Connect Shapes
@@ -133,9 +142,13 @@ Adds the shape to the canvas.
 ```
 Connects the shapes with a line.
 **Parameter**
+
 1. Shape-Object FROM
+
 2. Shape.Object TO
+
 3. ConnectionPoint-Position FROM
+
 4. ConnectionPoint-Position TO
 
 ##5. Events
