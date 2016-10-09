@@ -59,14 +59,17 @@ var flowchart;
                 this.CssBackgroundClass = cssClassPrefix + "_background";
                 this.CssContentClass = cssClassPrefix + "_content";
                 this.Metadata = metadata ? metadata : new shape.metadata.Html("");
-                this.RaphaelAttr = { fill: "white", stroke: "black", "fill-opacity": 0, "stroke-width": 1, cursor: "move" };
+                this.RaphaelAttr = { fill: "white", stroke: "black", "fill-opacity": 0, "stroke-width": 0, cursor: "move" };
             }
             ShapeBase.prototype.GetContainingElements = function () {
                 var list = [
                     this.RaphaelElement
                 ];
-                if (this.RaphaelMetadata) {
-                    list.push(this.RaphaelMetadata);
+                //if (this.RaphaelMetadata) {
+                //    list.push(this.RaphaelMetadata);
+                //}
+                if (this.MetadataHtmlElement) {
+                    list.push(this.MetadataHtmlElement);
                 }
                 for (var _i = 0, _a = this.ConnectionPoints; _i < _a.length; _i++) {
                     var p = _a[_i];
@@ -94,6 +97,11 @@ var flowchart;
             };
             ShapeBase.prototype.OnMove = function (x, y) {
                 var elements = this.GetContainingElements();
+                if (this.MetadataHtmlElement) {
+                    var metadataElement = this.MetadataHtmlElement;
+                    this.MetadataHtmlElement.style.left = (metadataElement.ox + x) + "px";
+                    this.MetadataHtmlElement.style.top = (metadataElement.oy + y) + "px";
+                }
                 for (var _i = 0, elements_2 = elements; _i < elements_2.length; _i++) {
                     var element = elements_2[_i];
                     var newX = element.ox + x;
@@ -160,16 +168,49 @@ var flowchart;
             ShapeBase.prototype.Delete = function () {
                 if (this.RaphaelElement)
                     this.RaphaelElement.remove();
-                if (this.RaphaelMetadata)
-                    this.RaphaelMetadata.remove();
+                //if(this.RaphaelMetadata)
+                //    this.RaphaelMetadata.remove();
+                if (this.MetadataHtmlElement) {
+                    if (this.MetadataHtmlElement.remove)
+                        this.MetadataHtmlElement.remove();
+                    else
+                        this.MetadataHtmlElement.parentElement.removeChild(this.MetadataHtmlElement);
+                }
                 var cp;
                 for (var _i = 0, _a = this.ConnectionPoints; _i < _a.length; _i++) {
                     cp = _a[_i];
                     cp.Delete();
                 }
             };
-            ShapeBase.prototype.SetCssContentClass = function (className) {
-                this.CssContentClass = className;
+            //abstract GetPosition():model.ShapePosition;
+            //abstract SetPosition(x: number, y: number);
+            ShapeBase.prototype.DrawShape = function (paper, posX, posY) {
+                var element = paper.rect(posX, posY, this.Width, this.Height);
+                element.attr(this.RaphaelAttr);
+                return element;
+            };
+            ShapeBase.prototype.GetPosition = function () {
+                return new flowchart.model.ShapePosition(this.RaphaelElement.attr("x"), this.RaphaelElement.attr("y"));
+                //return { x: this.RaphaelElement.attr("x"), y: this.RaphaelElement.attr("y") };
+            };
+            ShapeBase.prototype.SetPosition = function (posX, posY) {
+                this.RaphaelElement.attr({ x: posX, y: posY });
+            };
+            ShapeBase.prototype.OnSelect = function (options) {
+                //this.RaphaelElement.data("origStroke", this.RaphaelElement.attr("stroke"));
+                //this.RaphaelElement.attr("stroke", options.Colors.ShapeSelected);
+                if (this.MetadataHtmlElement) {
+                    this.MetadataHtmlElement.classList.add(this.CssBackgroundClass + "_selected");
+                    this.MetadataHtmlElement.firstElementChild.classList.add(this.CssContentClass + "_selected");
+                }
+            };
+            ShapeBase.prototype.OnUnselect = function (options) {
+                //var color = this.RaphaelElement.data("origStroke");
+                //this.RaphaelElement.attr("stroke", color);
+                if (this.MetadataHtmlElement) {
+                    this.MetadataHtmlElement.classList.remove(this.CssBackgroundClass + "_selected");
+                    this.MetadataHtmlElement.firstElementChild.classList.remove(this.CssContentClass + "_selected");
+                }
             };
             return ShapeBase;
         }(flowchart.model.SelectableElement));
@@ -186,30 +227,10 @@ var flowchart;
                 if (metadata === void 0) { metadata = null; }
                 _super.call(this, id, flowchart.constants.ShapeType.Process, width, height, metadata, "shape_process");
             }
-            Process.prototype.DrawShape = function (paper, posX, posY) {
-                var element = paper.rect(posX, posY, this.Width, this.Height);
-                element.attr(this.RaphaelAttr);
-                return element;
-            };
             Process.prototype.GetMetadataDiv = function () {
                 var element = document.createElement("div");
                 element.classList.add(this.CssBackgroundClass);
                 return element;
-            };
-            Process.prototype.GetPosition = function () {
-                return new flowchart.model.ShapePosition(this.RaphaelElement.attr("x"), this.RaphaelElement.attr("y"));
-                //return { x: this.RaphaelElement.attr("x"), y: this.RaphaelElement.attr("y") };
-            };
-            Process.prototype.SetPosition = function (posX, posY) {
-                this.RaphaelElement.attr({ x: posX, y: posY });
-            };
-            Process.prototype.OnSelect = function (options) {
-                this.RaphaelElement.data("origStroke", this.RaphaelElement.attr("stroke"));
-                this.RaphaelElement.attr("stroke", options.ColorSelectedShape);
-            };
-            Process.prototype.OnUnselect = function (options) {
-                var color = this.RaphaelElement.data("origStroke");
-                this.RaphaelElement.attr("stroke", color);
             };
             return Process;
         }(shape.ShapeBase));
@@ -226,41 +247,6 @@ var flowchart;
                 if (metadata === void 0) { metadata = null; }
                 _super.call(this, id, flowchart.constants.ShapeType.Decision, width, height, metadata, "shape_decision");
             }
-            Decision.prototype.DrawShape = function (paper, posX, posY) {
-                var path = this.CalculatePath(posX, posY, this.Width, this.Height);
-                var raphaelElement = paper.path(path.path);
-                raphaelElement.attr({ x: posX, y: posY });
-                raphaelElement.attr(this.RaphaelAttr);
-                return raphaelElement;
-            };
-            Decision.prototype.CalculatePath = function (posX, posY, width, height) {
-                var halfHeight = height / 2;
-                var halfWidth = width / 2;
-                var topX = posX + halfWidth;
-                var topY = posY;
-                var leftX = posX; //- halfWidth;
-                var leftY = posY + halfHeight;
-                var rightX = posX + width; //+ halfWidth;
-                var rightY = posY + halfHeight;
-                var bottomX = posX + halfWidth;
-                var bottomY = posY + height;
-                var top = topX + "," + topY;
-                var right = rightX + "," + rightY;
-                var left = leftX + "," + leftY;
-                var bottom = bottomX + "," + bottomY;
-                var path = "M" + top + " " + right + " " + bottom + " " + left + " " + top;
-                return {
-                    path: path,
-                    topX: topX,
-                    topY: topY,
-                    rightX: rightX,
-                    rightY: rightY,
-                    leftX: leftX,
-                    leftY: leftY,
-                    bottomX: bottomX,
-                    bottomY: bottomY
-                };
-            };
             //overridden
             Decision.prototype.GetMetadataDiv = function () {
                 var element = document.createElement("div");
@@ -271,49 +257,7 @@ var flowchart;
                 element.style.height = (this.Height * 0.7) + "px";
                 element.style.marginLeft = (this.Width * 0.49) + "px";
                 element.style.marginTop = (this.Height * 0.29) + "px";
-                //element.style.marginLeft = (this.Width * 0.15) + "px";
-                //element.style.marginTop = (this.Height * 0.15) + "px";
                 return element;
-                //var element: HTMLDivElement = document.createElement("div");
-                //var className = "shapeClass" + this.Id;
-                //var backgroundColor: string = "transparent";
-                //var css:CSSStyleRule = common.DomHelper.GetCssClass(this.CssBackgroundClass);
-                //if (css) {
-                //    backgroundColor = css.style["background-color"];
-                //}
-                ////check if class doesn't exist. if true, create it...
-                //if (!common.DomHelper.CssClassExists(className)) {
-                //    var style1: HTMLStyleElement = document.createElement('style');
-                //    var style2: HTMLStyleElement = document.createElement('style');
-                //    style1.type = 'text/css';
-                //    style2.type = 'text/css';
-                //    var halfWidth = this.Width / 2;
-                //    var halfHeight = this.Height / 2;
-                //    //its a little bit more complex because we have to create a diamond shape with css.
-                //    style1.innerHTML = "." + className +                '   { width: 0; height: 0; border: ' + halfWidth + 'px solid transparent; border-bottom: ' + halfHeight + 'px solid '+backgroundColor+'; position: absolute; top: -' + halfWidth+'px;padding-left:-50px;z-index:-1 }'; //when z-index=-1 then its possible to overlay some other styles afterwords
-                //    style2.innerHTML = "." + className + ':after{content: ""; width: 0; height: 0; border: ' + halfWidth + 'px solid transparent; border-top: ' + halfHeight + 'px solid ' + backgroundColor + ';position: absolute; left: -' + halfWidth + 'px; top: ' + halfHeight +'px; ;z-index:-1  }';
-                //    document.getElementsByTagName('head')[0].appendChild(style1);
-                //    document.getElementsByTagName('head')[0].appendChild(style2);
-                //}
-                //element.classList.add(className);
-                //return element;
-            };
-            Decision.prototype.GetPosition = function () {
-                return new flowchart.model.ShapePosition(this.RaphaelElement.attr("x"), this.RaphaelElement.attr("y"));
-                //return { x: this.RaphaelElement.attr("x"), y: this.RaphaelElement.attr("y") };
-            };
-            Decision.prototype.SetPosition = function (posX, posY) {
-                var path = this.CalculatePath(posX, posY, this.Width, this.Height);
-                this.RaphaelElement.node.setAttribute("d", path.path);
-                this.RaphaelElement.attr({ x: posX, y: posY });
-            };
-            Decision.prototype.OnSelect = function (options) {
-                this.RaphaelElement.data("origStroke", this.RaphaelElement.attr("stroke"));
-                this.RaphaelElement.attr("stroke", options.ColorSelectedShape);
-            };
-            Decision.prototype.OnUnselect = function (options) {
-                var color = this.RaphaelElement.data("origStroke");
-                this.RaphaelElement.attr("stroke", color);
             };
             return Decision;
         }(shape.ShapeBase));
@@ -327,10 +271,11 @@ var flowchart;
             this.options = options;
             this.eventHandler = eventHandler;
         }
-        Drawer.prototype.Initialize = function (canvasHtmlName, width, height) {
+        Drawer.prototype.Initialize = function (canvasContainerId, width, height) {
             if (width === void 0) { width = 0; }
             if (height === void 0) { height = 0; }
-            this.Paper = Raphael(canvasHtmlName, 0, 0);
+            this.CanvasContainerId = canvasContainerId;
+            this.Paper = Raphael(canvasContainerId, 0, 0);
             var nWidth = width !== 0 ? width : '100%';
             var nHeight = height !== 0 ? height : '100%';
             this.Paper.setSize(nWidth, nHeight);
@@ -346,8 +291,9 @@ var flowchart;
                 throw "Shape.Height is not a valid number.";
             if (!this.eventHandler.Notify(flowchart.constants.EventType.BeforeShapeCreated, new flowchart.model.EventParamShape(shape)))
                 return;
-            this.SetMetadata(shape, shape.Metadata, posX, posY);
+            //this.SetMetadata(shape,shape.Metadata, posX, posY);
             shape.RaphaelElement = shape.DrawShape(this.Paper, posX, posY);
+            this.SetMetadata(shape, shape.Metadata, posX, posY);
             shape.RaphaelElement.toFront();
             //set reference from the raphaelobject to the shape
             shape.SetRaphaelShapeReference();
@@ -355,44 +301,112 @@ var flowchart;
             for (var _i = 0, _a = shape.ConnectionPoints; _i < _a.length; _i++) {
                 point = _a[_i];
                 point.RaphaelElement = point.DrawShape(this.Paper, posX, posY);
+                var t = flowchart.constants.ConnectionPointType;
+                switch (point.PointType) {
+                    case t.Incoming:
+                        point.RaphaelElement.attr({ fill: this.options.Colors.ConnectionPointIncoming });
+                        break;
+                    case t.OutgoingTrueSuccess:
+                        point.RaphaelElement.attr({ fill: this.options.Colors.ConnectionPointTrueSuccess });
+                        break;
+                    case t.OutgoingFalseError:
+                        point.RaphaelElement.attr({ fill: this.options.Colors.ConnectionPointFalseError });
+                        break;
+                    default:
+                }
                 point.SetRaphaelShapeReference();
             }
             this.eventHandler.Notify(flowchart.constants.EventType.AfterShapeCreated, new flowchart.model.EventParamShape(shape));
         };
+        /**
+         * checks the current position of the canvas. if it has moved, we need to reposition the absolute divs from each shape.
+         */
+        Drawer.prototype.UpdateWrapperPosition = function (shapes) {
+            var canvasContainer = document.getElementById(this.CanvasContainerId);
+            var relativePos = this.GetRelativePos();
+            var origX = canvasContainer.getAttribute("relativeX");
+            var origY = canvasContainer.getAttribute("relativeY");
+            if (origX == relativePos.x && origY == relativePos.y) {
+                return;
+            }
+            var shape;
+            for (var _i = 0, shapes_1 = shapes; _i < shapes_1.length; _i++) {
+                shape = shapes_1[_i];
+                var div = shape.MetadataHtmlElement;
+                var pos = shape.GetPosition();
+                this.SetDivAbsolutePosition(div, relativePos.x, relativePos.y, pos.X, pos.Y);
+            }
+            //update new positions
+            canvasContainer.setAttribute("relativeX", relativePos.x);
+            canvasContainer.setAttribute("relativeY", relativePos.y);
+        };
+        /**
+         * return the relative position of the canvas.
+         * this is important because we have to absolutly position the divs.
+         */
+        Drawer.prototype.GetRelativePos = function () {
+            var canvasContainer = document.getElementById(this.CanvasContainerId);
+            var svgOffset = document.getElementsByTagName("svg")[0].getBoundingClientRect();
+            var bodyOffset = canvasContainer.parentElement.parentElement.getBoundingClientRect();
+            var parentParent = canvasContainer.parentElement.parentElement;
+            var ppTop = parentParent.offsetTop;
+            var ppLeft = parentParent.offsetLeft;
+            var relativeX = svgOffset.left - bodyOffset.left + ppLeft;
+            var relativeY = (svgOffset.top - bodyOffset.top) + ppTop;
+            return { x: relativeX, y: relativeY };
+        };
+        /**
+         * set the absolute position of the current div.
+         * @param metadataDiv
+         * @param relativeX relative x-pos of the canvas which is the 0-pos of the div.
+         * @param relativeY relative y-pos of the canvas which is the 0-pos of the div
+         * @param x
+         * @param y
+         */
+        Drawer.prototype.SetDivAbsolutePosition = function (metadataDiv, relativeX, relativeY, x, y) {
+            var absoluteX = relativeX + x;
+            var absoluteY = relativeY + y;
+            metadataDiv.style.left = absoluteX + "px";
+            metadataDiv.style.top = absoluteY + "px";
+            metadataDiv.setAttribute("x", absoluteX);
+            metadataDiv.setAttribute("y", absoluteY);
+        };
         Drawer.prototype.SetMetadata = function (shape, metadata, posX, posY) {
-            var svgRoot = this.Paper.canvas;
-            var metadataElement = document.createElementNS("http://www.w3.org/2000/svg", "foreignObject");
-            //TODO http://stackoverflow.com/questions/13848039/svg-foreignobject-contents-do-not-display-unless-plain-text
-            //metadata.innerHTML = "<i class='fa fa-sitemap'></i>";
-            metadataElement.setAttributeNS(null, "width", String(shape.Width));
-            metadataElement.setAttributeNS(null, "height", String(shape.Height));
-            metadataElement.setAttributeNS(null, "x", String(posX));
-            metadataElement.setAttributeNS(null, "y", String(posY));
-            metadataElement.setAttributeNS(null, "style", "padding:1px");
-            //var x = document.createElementNS("http://www.w3.org/1999/xhtml", "div");
-            //x.setAttribute("xmlns", "http://www.w3.org/1999/xhtml");
-            //metadataElement.appendChild(x);
-            //we first add the metadata, that it will be behind the real raphaeljs object
-            //when the raphaeljs element is transparent we see the metadata shining through
-            //and still have all drag&drop functionallity of the raphaeljs-element.
-            svgRoot.appendChild(metadataElement); //1st
-            shape.RaphaelMetadata = metadataElement;
+            // shape.RaphaelMetadata = metadataElement;
+            var canvasContainer = document.getElementById(this.CanvasContainerId);
+            var relativePos = this.GetRelativePos();
+            canvasContainer.setAttribute("relativeX", relativePos.x);
+            canvasContainer.setAttribute("relativeY", relativePos.y);
+            //var absoluteX = relativePos.x+ posX;
+            //var absoluteY = relativePos.y+ posY;
+            var metadataDiv = document.createElement("div");
+            metadataDiv.style.cssText = "width:" + shape.Width + "px;" +
+                "height:" + shape.Height + "px;" +
+                //"border: 1px solid red; " +
+                "position:absolute; " +
+                "z-index:1";
+            this.SetDivAbsolutePosition(metadataDiv, relativePos.x, relativePos.y, posX, posY);
+            shape.MetadataHtmlElement = metadataDiv;
+            canvasContainer.parentElement.appendChild(metadataDiv);
             this.UpdateMetadata(shape, metadata);
         };
         Drawer.prototype.UpdateMetadata = function (shape, metadata) {
             if (!shape)
                 throw "UpdateMetadata: Shape is null.";
-            if (!shape.RaphaelMetadata)
-                throw "UpdateMetadata: Shape.RapahelMetadata is null";
-            var div = shape.GetMetadataDiv();
-            var metaHtml = metadata.GetHtml();
+            if (!shape.MetadataHtmlElement)
+                throw "UpdateMetadata: Shape.MetadataHtmlElement is null";
+            //if (!shape.RaphaelMetadata)
+            //    throw "UpdateMetadata: Shape.RapahelMetadata is null";
+            var div = shape.GetMetadataDiv(); //new div element
+            var metaHtml = metadata.GetHtml(); //html-content
             metaHtml.classList.add(shape.CssContentClass);
+            //metaHtml.classList.add(shape.CssClass);
             div.appendChild(metaHtml);
             //metaHtml.appendChild(div);
-            for (var i = shape.RaphaelMetadata.childNodes.length - 1; i >= 0; i--) {
-                shape.RaphaelMetadata.removeChild(shape.RaphaelMetadata.childNodes[i]);
+            for (var i = shape.MetadataHtmlElement.childNodes.length - 1; i >= 0; i--) {
+                shape.MetadataHtmlElement.removeChild(shape.MetadataHtmlElement.childNodes[i]);
             }
-            shape.RaphaelMetadata.appendChild(div);
+            shape.MetadataHtmlElement.appendChild(div);
             //shape.RaphaelMetadata.appendChild(metaHtml); //.innerHTML = metaHtml.outerHTML + div.outerHTML;
             //shape.RaphaelMetadata.appendChild(div);
         };
@@ -407,23 +421,51 @@ var flowchart;
      * Handles the whole flowchart.
      */
     var FlowChart = (function () {
-        function FlowChart(canvas, options, width, height) {
+        function FlowChart(htmlElementId, options, width, height) {
             if (!options)
                 options = new flowchart.FlowChartOptions();
+            var htmlElement = document.getElementById(htmlElementId);
+            if (!htmlElement)
+                throw "Element with id [" + htmlElementId + "] not found.";
+            var wrapperId = this.CreateWrapperDiv(htmlElement, htmlElementId);
             this.options = options;
             this.eventHandler = new flowchart.EventHandler();
             this.namespaceRegistrator = new flowchart.NamespaceRegistrator();
             this.model = new flowchart.model.FlowChartModel();
             this.drawer = new flowchart.Drawer(options, this.eventHandler);
-            this.drawer.Initialize(canvas, width, height);
+            this.drawer.Initialize(wrapperId, width, height);
             options.Init(this.drawer.Paper);
             this.selectionManager = new flowchart.SelectionManager(this.eventHandler, options, this.model);
             this.connector = new flowchart.ShapeConnector(this.drawer.Paper, options, this.eventHandler);
             this.mover = new flowchart.ShapeMover(this.connector, this.drawer.Paper, options, this.eventHandler);
+            this.CheckCanvasPosition();
             //document.body.onkeydown = (event) => {
             //    console.log(event);
             //};
         }
+        /**
+         * checks the position of the divs and updates them if anything moved on the page.
+         */
+        FlowChart.prototype.CheckCanvasPosition = function () {
+            var _this = this;
+            setTimeout(function () {
+                _this.drawer.UpdateWrapperPosition(_this.model.Shapes);
+                _this.CheckCanvasPosition();
+            }, 1000);
+        };
+        /**
+         * will create a wrapper inside the html-Element.
+         * this will enable the possibility to mix svg and html-elements including z-indexing. (put svg over html-absolute-positioned elements)
+         * @param parentId
+         */
+        FlowChart.prototype.CreateWrapperDiv = function (parentElement, parentId) {
+            var wrapperId = "__wrapper__" + parentId;
+            var wrapperDiv = document.createElement("div");
+            wrapperDiv.id = wrapperId;
+            wrapperDiv.style.cssText = "width:100%;height: 100%;margin: 0;padding: 0;position:relative;z-index:1000;border:1px solid blue";
+            parentElement.appendChild(wrapperDiv);
+            return wrapperId;
+        };
         /**
          * Removes everything from the flowchart and the underlying model.
          */
@@ -576,34 +618,33 @@ var common;
     var DomHelper = (function () {
         function DomHelper() {
         }
-        /**
-         * returns true, if the given class exists.
-         * @param className Name of the cssClass
-         */
-        DomHelper.CssClassExists = function (className) {
-            return this.GetCssClass(className) != null;
-        };
-        /**
-         * Returns the cssClass from the dom.
-         * @param className Name of the cssClass
-         */
-        DomHelper.GetCssClass = function (className) {
-            if (className.indexOf(".") !== 0)
-                className = '.' + className;
-            for (var i = 0; i < document.styleSheets.length; i++) {
-                var styleSheet = document.styleSheets[i];
-                var rules = styleSheet.rules || styleSheet.cssRules;
-                if (!rules)
-                    continue;
-                var rule;
-                for (var _i = 0, rules_1 = rules; _i < rules_1.length; _i++) {
-                    rule = rules_1[_i];
-                    if (rule.selectorText == className)
-                        return rule;
-                }
-            }
-            return null;
-        };
+        ///**
+        // * returns true, if the given class exists.
+        // * @param className Name of the cssClass
+        // */
+        //static CssClassExists(className:string) {
+        //    return this.GetCssClass(className) != null;
+        //}
+        ///**
+        // * Returns the cssClass from the dom.
+        // * @param className Name of the cssClass
+        // */
+        //static GetCssClass(className: string): CSSStyleRule {
+        //    if (className.indexOf(".") !== 0)
+        //        className = '.' + className;
+        //    for (var i = 0; i < document.styleSheets.length; i++) {
+        //        var styleSheet: any = document.styleSheets[i];
+        //        var rules = styleSheet.rules || styleSheet.cssRules;
+        //        if (!rules)
+        //            continue;
+        //        var rule: CSSStyleRule;
+        //        for (rule of rules) {
+        //            if (rule.selectorText == className)
+        //                return rule;
+        //        }
+        //    }
+        //    return null;
+        //}
         DomHelper.CreateCopy = function (object) {
             return jQuery.extend(true, {}, object);
         };
@@ -792,8 +833,8 @@ var flowchart;
             ShapeConnection.prototype.OnSelect = function (options) {
                 this.RaphaelConnection.InnerLine.data("origStroke", this.RaphaelConnection.InnerLine.attr("stroke"));
                 this.RaphaelConnection.OuterLine.data("origStroke", this.RaphaelConnection.OuterLine.attr("stroke"));
-                this.RaphaelConnection.InnerLine.attr("stroke", options.ColorSelectedConnection);
-                this.RaphaelConnection.OuterLine.attr("stroke", options.ColorSelectedConnection);
+                this.RaphaelConnection.InnerLine.attr("stroke", options.Colors.ConnectionSelected);
+                this.RaphaelConnection.OuterLine.attr("stroke", options.Colors.ConnectionSelected);
             };
             ShapeConnection.prototype.OnUnselect = function (options) {
                 var innerLineColor = this.RaphaelConnection.InnerLine.data("origStroke");
@@ -939,14 +980,30 @@ var flowchart;
 })(flowchart || (flowchart = {}));
 var flowchart;
 (function (flowchart) {
+    var FlowChartColors = (function () {
+        function FlowChartColors() {
+            //Shape
+            this.ShapeSelected = "blue";
+            //Connection
+            this.ConnectionSelected = "blue";
+            //connectionpoints
+            this.ConnectionPointIncoming = "white";
+            this.ConnectionPointTrueSuccess = "green";
+            this.ConnectionPointFalseError = "red";
+        }
+        return FlowChartColors;
+    }());
+    flowchart.FlowChartColors = FlowChartColors;
+})(flowchart || (flowchart = {}));
+var flowchart;
+(function (flowchart) {
     var FlowChartOptions = (function () {
         function FlowChartOptions(shapeConnectionType) {
             if (shapeConnectionType === void 0) { shapeConnectionType = flowchart.constants.ConnectionDrawerType.Curved; }
             this.IsInitialized = false;
-            this.ColorSelectedShape = "yellow";
-            this.ColorSelectedConnection = "yellow";
             this.EnableEvents = true;
             this.ShapeConnectionType = shapeConnectionType;
+            this.Colors = new flowchart.FlowChartColors();
         }
         FlowChartOptions.prototype.Init = function (paper) {
             if (this.IsInitialized)
@@ -1160,6 +1217,8 @@ var flowchart;
              * @param connectionId
              */
             FlowChartModel.prototype.DeleteConnectionFromShape = function (shape, connectionId) {
+                if (!shape || !shape.Connections)
+                    return;
                 for (var i = 0; i < shape.Connections.length; i++) {
                     if (shape.Connections[i].Id == connectionId) {
                         shape.Connections.splice(i, 1);
@@ -1521,22 +1580,6 @@ var flowchart;
                 _super.call(this, "", flowchart.constants.ShapeType.ConnectionPoint, width, height, null, "");
                 this.PointType = type;
                 this.Position = position;
-                var t = flowchart.constants.ConnectionPointType;
-                switch (type) {
-                    case t.Incoming:
-                        this.CssBackgroundClass = "connection_point_incoming";
-                        this.CssContentClass = "";
-                        break;
-                    case t.OutgoingTrueSuccess:
-                        this.CssBackgroundClass = "connection_point_outgoing_true_success";
-                        this.CssContentClass = "";
-                        break;
-                    case t.OutgoingFalseError:
-                        this.CssBackgroundClass = "connection_point_outgoing_false_error";
-                        this.CssContentClass = "";
-                        break;
-                    default:
-                }
             }
             ConnectionPoint.prototype.DrawShape = function (paper, posX, posY) {
                 var p = this.ParentShape.RaphaelElement;
@@ -1554,9 +1597,9 @@ var flowchart;
                 ////this.RaphaelElement = this.Paper.rect(x, y, pointWidth, pointHeight);
                 var element = paper.circle(x, y, pointWidth);
                 element.data("shape", this);
-                var cssClass = common.DomHelper.GetCssClass(this.CssBackgroundClass);
-                if (cssClass)
-                    element.attr({ fill: cssClass.style["background-color"] });
+                //var cssClass = common.DomHelper.GetCssClass(this.CssBackgroundClass);
+                //if (cssClass)
+                //    element.attr({ fill: cssClass.style["background-color"] });
                 if (this.PointType != flowchart.constants.ConnectionPointType.Incoming) {
                     //add cursor:pointer because these points are draggable
                     element.attr({ cursor: "crosshair" });
@@ -1646,50 +1689,11 @@ var flowchart;
                 if (metadata === void 0) { metadata = null; }
                 _super.call(this, id, flowchart.constants.ShapeType.Terminal, width, height, metadata, "shape_terminal");
             }
-            Terminal.prototype.DrawShape = function (paper, posX, posY) {
-                var path = this.CalculatePath(posX, posY, this.Width, this.Height);
-                var raphaelElement = paper.path(path);
-                raphaelElement.attr({ x: posX, y: posY });
-                raphaelElement.attr(this.RaphaelAttr);
-                return raphaelElement;
-            };
-            Terminal.prototype.CalculatePath = function (posX, posY, width, height) {
-                var r1 = 20, r2 = 20, r3 = 20, r4 = 20;
-                var array = [];
-                array = array.concat(["M", posX + r1, posY]);
-                array = array.concat(['l', width - r1 - r2, 0]); //T
-                array = array.concat(["q", r2, 0, r2, r2]); //TR
-                array = array.concat(['l', 0, height - r3 - r2]); //R
-                array = array.concat(["q", 0, r3, -r3, r3]); //BR
-                array = array.concat(['l', -width + r4 + r3, 0]); //B
-                array = array.concat(["q", -r4, 0, -r4, -r4]); //BL
-                array = array.concat(['l', 0, -height + r4 + r1]); //L
-                array = array.concat(["q", 0, -r1, r1, -r1]); //TL
-                array = array.concat(["z"]); //end
-                return array.join(" ");
-            };
             //overridden
             Terminal.prototype.GetMetadataDiv = function () {
                 var element = document.createElement("div");
                 element.classList.add(this.CssBackgroundClass);
                 return element;
-            };
-            Terminal.prototype.GetPosition = function () {
-                return new flowchart.model.ShapePosition(this.RaphaelElement.attr("x"), this.RaphaelElement.attr("y"));
-                //return { x: this.RaphaelElement.attr("x"), y: this.RaphaelElement.attr("y") };
-            };
-            Terminal.prototype.SetPosition = function (posX, posY) {
-                var path = this.CalculatePath(posX, posY, this.Width, this.Height);
-                this.RaphaelElement.node.setAttribute("d", path);
-                this.RaphaelElement.attr({ x: posX, y: posY });
-            };
-            Terminal.prototype.OnSelect = function (options) {
-                this.RaphaelElement.data("origStroke", this.RaphaelElement.attr("stroke"));
-                this.RaphaelElement.attr("stroke", options.ColorSelectedShape);
-            };
-            Terminal.prototype.OnUnselect = function (options) {
-                var color = this.RaphaelElement.data("origStroke");
-                this.RaphaelElement.attr("stroke", color);
             };
             return Terminal;
         }(shape.ShapeBase));
@@ -1815,7 +1819,6 @@ var flowchart;
             if (!this.IsConnectionPoint(connectionPointShape.RaphaelElement))
                 return false;
             var point = (connectionPointShape);
-            console.log(point.PointType);
             for (var _i = 0, types_1 = types; _i < types_1.length; _i++) {
                 var type = types_1[_i];
                 if (point.PointType == type)
@@ -2010,9 +2013,9 @@ var flowchart;
     flowchart.ShapeMover = ShapeMover;
 })(flowchart || (flowchart = {}));
 /*!
-* TKO.FlowchartDesigner v1.0.1.0
+* TKO.FlowchartDesigner v1.0.2.0
 * License: MIT
 * Created By: Tobias Koller
 * Git: https://github.com/TobiasKoller/tko.flowchartdesigner
 */ 
-//# sourceMappingURL=tko.flowchart.js.map
+//# sourceMappingURL=tko.flowchartdesigner.js.map

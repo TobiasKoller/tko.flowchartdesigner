@@ -24,6 +24,7 @@ span {
     background-color: yellowgreen;
     border-radius: 20px;
     padding-left:0;
+    border: 1px solid black;
  }
 
  .shape_terminal_content {
@@ -38,14 +39,21 @@ span {
     -webkit-align-items: center;
     align-items: center;
     justify-content: center;
+ }
 
+ .shape_terminal_background_selected {
+ }
+
+ .shape_terminal_content_selected {
+     border: 1px solid blue;
  }
 
  /******************************Shape process******************************/
   .shape_process_background {
-     width: 100%;
-     height: 100%;
-     background-color: white
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    border: 1px solid black;
  }
 
   .shape_process_content {
@@ -61,11 +69,20 @@ span {
     justify-content: center;
   }
 
+
+ .shape_process_background_selected {
+     border: 1px solid blue;
+ }
+
+ .shape_process_content_selected {
+ }
+
   
   /******************************Shape decision******************************/
  .shape_decision_background {
     
       background: white;
+     border: 1px solid black;
 /* Rotate */
     -webkit-transform: rotate(-45deg);
     -moz-transform: rotate(-45deg);
@@ -78,29 +95,10 @@ span {
     -ms-transform-origin: 0 100%;
     -o-transform-origin: 0 100%;
     transform-origin: 0 100%;
-    /*margin: 29px 0 0px 49px;*/
-
-	  /*background-color: white;
-     -webkit-box-sizing: content-box;
-	  -moz-box-sizing: content-box;
-	  box-sizing: content-box;
-	  width: 40px;
-	  height: 40px;
-	  border: none;
-	  font: normal 100%/normal Arial, Helvetica, sans-serif;
-	  color: rgba(0,0,0,1);
-	  -o-text-overflow: clip;
-	  text-overflow: clip;
-	  -webkit-transform: rotateZ(-45deg)   ;
-	  transform: rotateZ(-45deg)   ;
-	  -webkit-transform-origin: 0 100% 0deg;
-	  transform-origin: 0 100% 0deg;*/
-
-      
-	  /*margin: 3px 0 0 30px;*/
  }
 
  .shape_decision_content {
+     
 
     /*Center content*/
     -webkit-transform: rotate(-45deg);
@@ -110,7 +108,7 @@ span {
     transform: rotate(45deg);
 	
      height: 100%;
-    <!-- display: -webkit-flexbox;
+    display: -webkit-flexbox;
     display: -ms-flexbox;
     display: -webkit-flex;
     display: flex; -->
@@ -119,50 +117,14 @@ span {
     -webkit-align-items: center;
     align-items: center;
     justify-content: center;
-
-
-       /*Center content*/
-    /*set text in the right angle*/
-    /*-webkit-transform: rotateZ(45deg)   ;
-    transform: rotateZ(45deg)   ;
-    background-color:transparent;
-    height: 100%;
-    display: -webkit-flexbox;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-    -webkit-flex-align: center;
-    -ms-flex-align: center;
-    -webkit-align-items: center;
-    align-items: center;
-    justify-content: center;*/
-
-    /*height: 100%;
-    display: -webkit-flexbox;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-    -webkit-flex-align: center;
-    -ms-flex-align: center;
-    -webkit-align-items: center;
-    align-items: center;
-    justify-content: center;*/
  }
 
- /******************************Shape connection-points******************************/
- .connection_point_incoming { /*Only background-color supported for this connection-point shapes*/
-     background-color: white;
+ .shape_decision_background_selected {
  }
 
- .connection_point_outgoing_true_success {/*Only background-color supported for this connection-point shapes*/
-     background-color: green;
+ .shape_decision_content_selected {
+     border: 1px solid blue;
  }
-
- .connection_point_outgoing_false_error {/*Only background-color supported for this connection-point shapes*/
-     background-color: red;
- }
-
-
  /********************************Tests*********************************************/
  .test_shape_process_content {
      background-color: yellow;

@@ -1,0 +1,6 @@
+﻿
+2016-10-09
+v1.0.2.0
+- removed all foreignobjects, because they are not well supported in some browsers (chrome, ie,...).
+- workedaround the foreignobject-issues by absolute positioning divs and put them behind the svg-items (z-indexing)
+- Tested in current version of Edge, IE, Firefox, Chrome
