@@ -29,19 +29,58 @@ var x = "";
 #Getting started
 
 ##1. Set references
-```css
+###css
+```html
     <link rel="stylesheet" href="../dist/tko.flowchartdesigner.css" type="text/css" />
 ```
 
+###javascript
+```html
+    <script src="../Scripts/jquery-1.9.1.min.js"></script>
+    <script src="../Scripts/bootstrap.min.js"></script>
+    <script src="../Scripts/raphael-min.js"></script>
+```
 ##2. Create Flowchart
 
+###html
+```html
+    <div id="myCanvas" class="flowchart_canvas" tabindex="1">
+        <!--Tabindex=1 to get the keydown-event for that div-->
+    </div>
+```
+In this example I used this css for the canvas-div.
+```css
+    .flowchart_canvas{
+        border: solid 1px #333;
+        background-color: #e0e0e0;
+        width: 100%;
+        height: 3000px;
+    }
+```
+###javascript
+```javascript
+    var options = new flowchart.FlowChartOptions();
+    var wc = new flowchart.FlowChart("myCanvas",options);
+```
+
 ##3. Add Shapes
+```javascript
+    var s0 = new flowchart.shape.Terminal("0", 150, 50, new flowchart.shape.metadata.Html("Start"));
+    var s1 = new flowchart.shape.Process("1", 150, 70, new flowchart.shape.metadata.Html("Do something"));
+    var s2 = new flowchart.shape.Decision("2", 100, 100, new flowchart.shape.metadata.Html("Ok?"));
+    var s3 = new flowchart.shape.Process("3", 150, 70, new flowchart.shape.metadata.Html("Yes"));
+    var s4 = new flowchart.shape.Process("4", 150, 70, new flowchart.shape.metadata.Html("No"));
+    var s5 = new flowchart.shape.Terminal("5", 150, 50, new flowchart.shape.metadata.Html("End"));
+```
+
 
 ##4. Connect Shapes
 
-##5. Save as JSON
+##5. Events
 
-##6. Read from JSON
+##6. Save as JSON
+
+##7. Read from JSON
 ```javascript
     var options = new flowchart.FlowChartOptions();
     //using curved-line to connect shapes.
