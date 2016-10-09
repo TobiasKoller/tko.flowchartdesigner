@@ -115,12 +115,12 @@
             wc = new flowchart.FlowChart("myCanvas",options);
 
 
-            var s0 = new flowchart.shape.Terminal("0", 150, 50, new flowchart.shape.metadata.Html("Start"));
-            var s1 = new flowchart.shape.Process("1", 150, 70, new flowchart.shape.metadata.Html("Do something"));
-            var s2 = new flowchart.shape.Decision("2", 100, 100, new flowchart.shape.metadata.Html("Ok?"));
-            var s3 = new flowchart.shape.Process("3", 150, 70, new flowchart.shape.metadata.Html("Yes"));
-            var s4 = new flowchart.shape.Process("4", 150, 70, new flowchart.shape.metadata.Html("No"));
-            var s5 = new flowchart.shape.Terminal("5", 150, 50, new flowchart.shape.metadata.Html("End"));
+            var s0 = new flowchart.shape.Terminal("0", 150, 50, "Start");
+            var s1 = new flowchart.shape.Process("1", 150, 70, "Do something");
+            var s2 = new flowchart.shape.Decision("2", 100, 100, "Ok?");
+            var s3 = new flowchart.shape.Process("3", 150, 70,"Yes");
+            var s4 = new flowchart.shape.Process("4", 150, 70, "No");
+            var s5 = new flowchart.shape.Terminal("5", 150, 50, "End");
 
             var cType = flowchart.constants.ConnectionPointType;
             var cPos = flowchart.constants.ConnectionPointPosition;
