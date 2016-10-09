@@ -26,8 +26,8 @@
             this.RaphaelConnection.InnerLine.data("origStroke", this.RaphaelConnection.InnerLine.attr("stroke"));
             this.RaphaelConnection.OuterLine.data("origStroke", this.RaphaelConnection.OuterLine.attr("stroke"));
 
-            this.RaphaelConnection.InnerLine.attr("stroke", options.ColorSelectedConnection);
-            this.RaphaelConnection.OuterLine.attr("stroke", options.ColorSelectedConnection);
+            this.RaphaelConnection.InnerLine.attr("stroke", options.Colors.ConnectionSelected);
+            this.RaphaelConnection.OuterLine.attr("stroke", options.Colors.ConnectionSelected);
         }
 
         OnUnselect(options: FlowChartOptions) {

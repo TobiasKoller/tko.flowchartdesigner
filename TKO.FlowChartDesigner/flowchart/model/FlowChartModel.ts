@@ -76,6 +76,8 @@
          * @param connectionId
          */
         DeleteConnectionFromShape(shape:shape.ShapeBase, connectionId: string) {
+            if (!shape || !shape.Connections)
+                return;
 
             for (var i = 0; i < shape.Connections.length; i++) {
                 if (shape.Connections[i].Id == connectionId) {

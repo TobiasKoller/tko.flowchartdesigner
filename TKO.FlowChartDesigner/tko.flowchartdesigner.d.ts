@@ -81,34 +81,24 @@ declare module flowchart.shape {
          */
         CalculateConnectionPointCoord(position: constants.ConnectionPointPosition, pointWidth: number, pointHeight: number): any;
         Delete(): void;
-        SetCssContentClass(className: string): void;
-        abstract DrawShape(paper: RaphaelPaper, posX: number, posY: number): any;
         abstract GetMetadataDiv(): HTMLDivElement;
-        abstract GetPosition(): model.ShapePosition;
-        abstract SetPosition(x: number, y: number): any;
+        DrawShape(paper: RaphaelPaper, posX: number, posY: number): RaphaelElement;
+        GetPosition(): model.ShapePosition;
+        SetPosition(posX: number, posY: number): void;
+        OnSelect(options: FlowChartOptions): void;
+        OnUnselect(options: FlowChartOptions): void;
     }
 }
 declare module flowchart.shape {
     class Process extends ShapeBase {
         constructor(id: string, width: any, height: any, metadata?: shape.metadata.IShapeMetadata);
-        DrawShape(paper: RaphaelPaper, posX: number, posY: number): RaphaelElement;
         GetMetadataDiv(): HTMLDivElement;
-        GetPosition(): model.ShapePosition;
-        SetPosition(posX: number, posY: number): void;
-        OnSelect(options: FlowChartOptions): void;
-        OnUnselect(options: FlowChartOptions): void;
     }
 }
 declare module flowchart.shape {
     class Decision extends ShapeBase {
         constructor(id: string, width: any, height: any, metadata?: shape.metadata.IShapeMetadata);
-        DrawShape(paper: RaphaelPaper, posX: number, posY: number): RaphaelElement;
-        private CalculatePath(posX, posY, width, height);
         GetMetadataDiv(): HTMLDivElement;
-        GetPosition(): model.ShapePosition;
-        SetPosition(posX: number, posY: number): void;
-        OnSelect(options: FlowChartOptions): void;
-        OnUnselect(options: FlowChartOptions): void;
     }
 }
 declare module flowchart {
@@ -120,6 +110,24 @@ declare module flowchart {
         constructor(options: FlowChartOptions, eventHandler: any);
         Initialize(canvasContainerId: string, width?: number, height?: number): void;
         AddShape(shape: shape.ShapeBase, posX: number, posY: number): void;
+        /**
+         * checks the current position of the canvas. if it has moved, we need to reposition the absolute divs from each shape.
+         */
+        UpdateWrapperPosition(shapes: shape.ShapeBase[]): void;
+        /**
+         * return the relative position of the canvas.
+         * this is important because we have to absolutly position the divs.
+         */
+        private GetRelativePos();
+        /**
+         * set the absolute position of the current div.
+         * @param metadataDiv
+         * @param relativeX relative x-pos of the canvas which is the 0-pos of the div.
+         * @param relativeY relative y-pos of the canvas which is the 0-pos of the div
+         * @param x
+         * @param y
+         */
+        private SetDivAbsolutePosition(metadataDiv, relativeX, relativeY, x, y);
         SetMetadata(shape: shape.ShapeBase, metadata: shape.metadata.IShapeMetadata, posX: number, posY: number): void;
         UpdateMetadata(shape: shape.ShapeBase, metadata: shape.metadata.IShapeMetadata): void;
     }
@@ -138,6 +146,10 @@ declare module flowchart {
         private namespaceRegistrator;
         private options;
         constructor(htmlElementId: string, options?: FlowChartOptions, width?: number, height?: number);
+        /**
+         * checks the position of the divs and updates them if anything moved on the page.
+         */
+        private CheckCanvasPosition();
         /**
          * will create a wrapper inside the html-Element.
          * this will enable the possibility to mix svg and html-elements including z-indexing. (put svg over html-absolute-positioned elements)
@@ -214,16 +226,6 @@ declare module flowchart {
 }
 declare module common {
     class DomHelper {
-        /**
-         * returns true, if the given class exists.
-         * @param className Name of the cssClass
-         */
-        static CssClassExists(className: string): boolean;
-        /**
-         * Returns the cssClass from the dom.
-         * @param className Name of the cssClass
-         */
-        static GetCssClass(className: string): CSSStyleRule;
         static CreateCopy(object: any): any;
         static EncodeHtmlEntity(x: any): any;
         /**
@@ -232,63 +234,23 @@ declare module common {
         static DecodeHtmlEntity(string: any): string;
     }
 }
-declare module flowchart.connection.drawer {
-    class Curved implements drawer.IConnectionDrawer {
-        private paper;
-        constructor(paper: RaphaelPaper);
-        Draw(raphaelObjectFrom: any, raphaelObjectTo: any, innerColor: string, outerColor: string, thickness?: number, existingConnection?: connection.RaphaelConnection): connection.RaphaelConnection;
+declare module flowchart {
+    class FlowChartColors {
+        ShapeSelected: string;
+        ConnectionSelected: string;
+        ConnectionPointIncoming: string;
+        ConnectionPointTrueSuccess: string;
+        ConnectionPointFalseError: string;
     }
 }
-declare module flowchart.connection.drawer {
-    class Elbow implements drawer.IConnectionDrawer {
-        Draw(raphaelObjectFrom: any, raphaelObjectTo: any, innerColor: string, outerColor: string, thickness?: number, existingConnection?: connection.RaphaelConnection): connection.RaphaelConnection;
-    }
-}
-declare module flowchart.connection.drawer {
-    interface IConnectionDrawer {
-        Draw(shapeFrom: any, shapeTo: any, innerColor: string, outerColor: string, thickness?: number, existingConnection?: connection.RaphaelConnection): connection.RaphaelConnection;
-    }
-}
-declare module flowchart.connection.drawer {
-    class Straight implements drawer.IConnectionDrawer {
-        private paper;
-        constructor(paper: RaphaelPaper);
-        Draw(raphaelObjectFrom: any, raphaelObjectTo: any, innerColor: string, outerColor: string, thickness?: number, existingConnection?: connection.RaphaelConnection): connection.RaphaelConnection;
-    }
-}
-declare module flowchart.connection {
-    class RaphaelConnection {
-        private ref;
-        InnerLine: RaphaelElement;
-        OuterLine: RaphaelElement;
-        ShapeFrom: RaphaelElement;
-        ShapeTo: RaphaelElement;
-        InnerColor: string;
-        OuterColor: string;
-        Thickness: number;
-        constructor(ref: RaphaelPaper, path: string, innerColor: string, outerColor: string, thickness: number, shapeFrom: RaphaelElement, shapeTo: RaphaelElement);
-        RemoveFromPaper(): void;
-    }
-}
-declare module flowchart.connection {
-    class ShapeConnection extends model.SelectableElement {
-        ShapeFrom: shape.ShapeBase;
-        ShapeTo: shape.ShapeBase;
-        Type: constants.ConnectionType;
-        ConnectionPointFrom: shape.ConnectionPoint;
-        ConnectionPointTo: shape.ConnectionPoint;
-        RaphaelConnection: connection.RaphaelConnection;
-        constructor(id: string, shapeFrom: shape.ShapeBase, shapeTo: shape.ShapeBase, type: constants.ConnectionType, posFrom: shape.ConnectionPoint, posTo: shape.ConnectionPoint, raphaelConnection: RaphaelConnection);
-        OnSelect(options: FlowChartOptions): void;
-        OnUnselect(options: FlowChartOptions): void;
-        Delete(): void;
-    }
-}
-declare module flowchart.constants {
-    enum ConnectionDrawerType {
-        Curved = 0,
-        Straight = 1,
-        Elbow = 2,
+declare module flowchart {
+    class ModelLoader {
+        private flowChart;
+        private namespaceRegistrator;
+        constructor(flowChart: FlowChart, namespaceRegistrator: NamespaceRegistrator);
+        Load(exportModel: model.ExportModel): void;
+        private AddShapes(shapeList);
+        private ConnectShapes(connections);
     }
 }
 declare module flowchart.constants {
@@ -333,39 +295,11 @@ declare module flowchart.constants {
         AfterShapeCreated = 14,
     }
 }
-declare module flowchart {
-    class EventHandler {
-        private listener;
-        /**
-         * register event
-         * @param type
-         * @param callback
-         * @param id
-         */
-        Register(type: constants.EventType, callback: (eventArgs: any) => boolean, id?: string): void;
-        /**
-         * unregister event
-         * @param id
-         */
-        Unregister(id: string): void;
-        /**
-         * Notifies all event-listener
-         * @param type
-         * @param eventArgs
-         */
-        Notify(type: constants.EventType, eventArgs: any): boolean;
-    }
-}
-declare module flowchart {
-    class FlowChartOptions {
-        ShapeConnectionType: constants.ConnectionDrawerType;
-        ShapeConnection: connection.drawer.IConnectionDrawer;
-        IsInitialized: boolean;
-        ColorSelectedShape: string;
-        ColorSelectedConnection: string;
-        EnableEvents: boolean;
-        constructor(shapeConnectionType?: constants.ConnectionDrawerType);
-        Init(paper: RaphaelPaper): void;
+declare module flowchart.constants {
+    enum ConnectionDrawerType {
+        Curved = 0,
+        Straight = 1,
+        Elbow = 2,
     }
 }
 declare module flowchart.model {
@@ -393,6 +327,20 @@ declare module flowchart.model {
     class EventParamShape {
         Shape: shape.ShapeBase;
         constructor(shape: shape.ShapeBase);
+    }
+}
+declare module flowchart.connection {
+    class RaphaelConnection {
+        private ref;
+        InnerLine: RaphaelElement;
+        OuterLine: RaphaelElement;
+        ShapeFrom: RaphaelElement;
+        ShapeTo: RaphaelElement;
+        InnerColor: string;
+        OuterColor: string;
+        Thickness: number;
+        constructor(ref: RaphaelPaper, path: string, innerColor: string, outerColor: string, thickness: number, shapeFrom: RaphaelElement, shapeTo: RaphaelElement);
+        RemoveFromPaper(): void;
     }
 }
 declare module flowchart.model {
@@ -483,21 +431,59 @@ declare module flowchart.model {
         AddConnectionDrawer(enumValue: number, classNamespace: any): void;
     }
 }
+declare module flowchart.connection {
+    class ShapeConnection extends model.SelectableElement {
+        ShapeFrom: shape.ShapeBase;
+        ShapeTo: shape.ShapeBase;
+        Type: constants.ConnectionType;
+        ConnectionPointFrom: shape.ConnectionPoint;
+        ConnectionPointTo: shape.ConnectionPoint;
+        RaphaelConnection: connection.RaphaelConnection;
+        constructor(id: string, shapeFrom: shape.ShapeBase, shapeTo: shape.ShapeBase, type: constants.ConnectionType, posFrom: shape.ConnectionPoint, posTo: shape.ConnectionPoint, raphaelConnection: RaphaelConnection);
+        OnSelect(options: FlowChartOptions): void;
+        OnUnselect(options: FlowChartOptions): void;
+        Delete(): void;
+    }
+}
+declare module flowchart {
+    class EventHandler {
+        private listener;
+        /**
+         * register event
+         * @param type
+         * @param callback
+         * @param id
+         */
+        Register(type: constants.EventType, callback: (eventArgs: any) => boolean, id?: string): void;
+        /**
+         * unregister event
+         * @param id
+         */
+        Unregister(id: string): void;
+        /**
+         * Notifies all event-listener
+         * @param type
+         * @param eventArgs
+         */
+        Notify(type: constants.EventType, eventArgs: any): boolean;
+    }
+}
+declare module flowchart {
+    class FlowChartOptions {
+        ShapeConnectionType: constants.ConnectionDrawerType;
+        ShapeConnection: connection.drawer.IConnectionDrawer;
+        IsInitialized: boolean;
+        Colors: FlowChartColors;
+        EnableEvents: boolean;
+        constructor(shapeConnectionType?: constants.ConnectionDrawerType);
+        Init(paper: RaphaelPaper): void;
+    }
+}
 declare module flowchart.model {
     class ShapePosition {
         X: number;
         Y: number;
         constructor(x: number, y: number);
-    }
-}
-declare module flowchart {
-    class ModelLoader {
-        private flowChart;
-        private namespaceRegistrator;
-        constructor(flowChart: FlowChart, namespaceRegistrator: NamespaceRegistrator);
-        Load(exportModel: model.ExportModel): void;
-        private AddShapes(shapeList);
-        private ConnectShapes(connections);
     }
 }
 declare module flowchart {
@@ -557,61 +543,28 @@ declare module flowchart {
         NotifySelectionChanged(type: constants.EventType, element: any): boolean;
     }
 }
-declare module flowchart.shape {
-    class ConnectionPoint extends ShapeBase {
-        PointType: constants.ConnectionPointType;
-        Position: constants.ConnectionPointPosition;
-        constructor(type: constants.ConnectionPointType, position: constants.ConnectionPointPosition, width?: number, height?: number);
-        DrawShape(paper: RaphaelPaper, posX: number, posY: number): RaphaelElement;
-        GetPosition(): model.ShapePosition;
-        SetPosition(posX: number, posY: number): void;
-        GetMetadataDiv(): HTMLDivElement;
-        CreateCopy(): ConnectionPoint;
-        OnSelect(): void;
-        OnUnselect(): void;
+declare module flowchart.connection.drawer {
+    class Elbow implements drawer.IConnectionDrawer {
+        Draw(raphaelObjectFrom: any, raphaelObjectTo: any, innerColor: string, outerColor: string, thickness?: number, existingConnection?: connection.RaphaelConnection): connection.RaphaelConnection;
     }
 }
-declare module flowchart.shape.metadata {
-    class Html implements IShapeMetadata {
-        Label: string;
-        Icon: string;
-        Html: HTMLElement;
-        constructor(label?: string, icon?: string);
-        private CreateHtml();
-        /**
-         * Set the containing HTML
-         * @param htmlElement
-         */
-        SetHtml(htmlElement: HTMLElement): void;
-        /**
-         * Set the containing HTML with string
-         * @param innerHtml
-         */
-        SetHtmlText(innerHtml: string): void;
-        /**
-         * returns the metadata as HTMLElement
-         */
-        GetHtml(): HTMLElement;
+declare module flowchart.connection.drawer {
+    interface IConnectionDrawer {
+        Draw(shapeFrom: any, shapeTo: any, innerColor: string, outerColor: string, thickness?: number, existingConnection?: connection.RaphaelConnection): connection.RaphaelConnection;
     }
 }
-declare module flowchart.shape.metadata {
-    interface IShapeMetadata {
-        Html: HTMLElement;
-        GetHtml(): HTMLElement;
-        SetHtml(htmlElement: HTMLElement): any;
-        SetHtmlText(innerHtml: string): any;
+declare module flowchart.connection.drawer {
+    class Curved implements drawer.IConnectionDrawer {
+        private paper;
+        constructor(paper: RaphaelPaper);
+        Draw(raphaelObjectFrom: any, raphaelObjectTo: any, innerColor: string, outerColor: string, thickness?: number, existingConnection?: connection.RaphaelConnection): connection.RaphaelConnection;
     }
 }
-declare module flowchart.shape {
-    class Terminal extends ShapeBase {
-        constructor(id: string, width: any, height: any, metadata?: shape.metadata.IShapeMetadata);
-        DrawShape(paper: RaphaelPaper, posX: number, posY: number): RaphaelElement;
-        private CalculatePath(posX, posY, width, height);
-        GetMetadataDiv(): HTMLDivElement;
-        GetPosition(): model.ShapePosition;
-        SetPosition(posX: number, posY: number): void;
-        OnSelect(options: FlowChartOptions): void;
-        OnUnselect(options: FlowChartOptions): void;
+declare module flowchart.connection.drawer {
+    class Straight implements drawer.IConnectionDrawer {
+        private paper;
+        constructor(paper: RaphaelPaper);
+        Draw(raphaelObjectFrom: any, raphaelObjectTo: any, innerColor: string, outerColor: string, thickness?: number, existingConnection?: connection.RaphaelConnection): connection.RaphaelConnection;
     }
 }
 declare module flowchart {
@@ -694,12 +647,63 @@ declare module flowchart {
         /**
          * returns true, if user is currently dragging an connection.
          */
-        private IsDragging();
+        IsDragging(): boolean;
         /**
          * checks if a connection between two shapes already exists
          * @param shapeFrom
          * @param shapeTo
          */
         private IsConnectionAllowed(connectionPointFrom, connectionPointTo);
+    }
+}
+declare module flowchart.shape {
+    class ConnectionPoint extends ShapeBase {
+        PointType: constants.ConnectionPointType;
+        Position: constants.ConnectionPointPosition;
+        constructor(type: constants.ConnectionPointType, position: constants.ConnectionPointPosition, width?: number, height?: number);
+        DrawShape(paper: RaphaelPaper, posX: number, posY: number): RaphaelElement;
+        GetPosition(): model.ShapePosition;
+        SetPosition(posX: number, posY: number): void;
+        GetMetadataDiv(): HTMLDivElement;
+        CreateCopy(): ConnectionPoint;
+        OnSelect(): void;
+        OnUnselect(): void;
+    }
+}
+declare module flowchart.shape.metadata {
+    interface IShapeMetadata {
+        Html: HTMLElement;
+        GetHtml(): HTMLElement;
+        SetHtml(htmlElement: HTMLElement): any;
+        SetHtmlText(innerHtml: string): any;
+    }
+}
+declare module flowchart.shape.metadata {
+    class Html implements IShapeMetadata {
+        Label: string;
+        Icon: string;
+        Html: HTMLElement;
+        constructor(label?: string, icon?: string);
+        private CreateHtml();
+        /**
+         * Set the containing HTML
+         * @param htmlElement
+         */
+        SetHtml(htmlElement: HTMLElement): void;
+        /**
+         * Set the containing HTML with string
+         * @param innerHtml
+         */
+        SetHtmlText(innerHtml: string): void;
+        /**
+         * returns the metadata as HTMLElement
+         */
+        GetHtml(): HTMLElement;
+    }
+}
+declare module flowchart.shape {
+    class Terminal extends ShapeBase {
+        constructor(id: string, width: any, height: any, metadata?: shape.metadata.IShapeMetadata);
+        GetMetadataDiv(): HTMLDivElement;
     }
 }

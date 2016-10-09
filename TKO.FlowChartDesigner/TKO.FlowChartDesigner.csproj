@@ -43,6 +43,7 @@
     <Content Include="Content\bootstrap.css.map" />
     <Content Include="Content\bootstrap-theme.min.css.map" />
     <Content Include="Content\bootstrap-theme.css.map" />
+    <Content Include="tko.flowchartdesigner.js" />
     <Content Include="tko.flowchartdesigner.min.js">
       <DependentUpon>tko.flowchartdesigner.js</DependentUpon>
     </Content>
@@ -54,10 +55,10 @@
     <Content Include="Scripts\jquery-1.9.1.min.js" />
     <Content Include="Scripts\raphael-min.js" />
     <Content Include="Scripts\raphael.js" />
-    <Content Include="tko.flowchartdesigner.js" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="common\DomHelper.ts" />
+    <TypeScriptCompile Include="flowchart\FlowChartColors.ts" />
     <TypeScriptCompile Include="flowchart\ModelLoader.ts" />
     <TypeScriptCompile Include="flowchart\model\BaseElement.ts" />
     <TypeScriptCompile Include="flowchart\constants\ConnectionPointPosition.ts" />
@@ -145,7 +146,7 @@
     <TypeScriptCompileOnSaveEnabled>True</TypeScriptCompileOnSaveEnabled>
     <TypeScriptNoImplicitAny>False</TypeScriptNoImplicitAny>
     <TypeScriptModuleKind>AMD</TypeScriptModuleKind>
-    <TypeScriptOutFile>tko.flowchart.js</TypeScriptOutFile>
+    <TypeScriptOutFile>tko.flowchartdesigner.js</TypeScriptOutFile>
     <TypeScriptOutDir />
     <TypeScriptGeneratesDeclarations>True</TypeScriptGeneratesDeclarations>
     <TypeScriptNoEmitOnError>True</TypeScriptNoEmitOnError>

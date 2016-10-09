@@ -46,21 +46,68 @@ module flowchart {
             //set reference from the raphaelobject to the shape
             shape.SetRaphaelShapeReference();
 
-            var point: shape.IShape;
+            var point: shape.ConnectionPoint;
             for (point of shape.ConnectionPoints) {
                 point.RaphaelElement = point.DrawShape(this.Paper, posX, posY);
-                
+
+                  var t = constants.ConnectionPointType;
+                  switch (point.PointType) {
+                    case t.Incoming:
+                        point.RaphaelElement.attr({fill: this.options.Colors.ConnectionPointIncoming});
+                        break;
+                    case t.OutgoingTrueSuccess:
+                          point.RaphaelElement.attr({ fill: this.options.Colors.ConnectionPointTrueSuccess });
+                        break;
+
+                    case t.OutgoingFalseError:
+                          point.RaphaelElement.attr({ fill: this.options.Colors.ConnectionPointFalseError });
+                    break;
+                default:
+            }
+
                 point.SetRaphaelShapeReference();
             }
 
             this.eventHandler.Notify(constants.EventType.AfterShapeCreated, new model.EventParamShape(shape));
         }
 
-        SetMetadata(shape: shape.ShapeBase, metadata: shape.metadata.IShapeMetadata, posX: number, posY: number) {
-           // shape.RaphaelMetadata = metadataElement;
-            
+        /**
+         * checks the current position of the canvas. if it has moved, we need to reposition the absolute divs from each shape.
+         */
+        UpdateWrapperPosition(shapes: shape.ShapeBase[]) {
             var canvasContainer = document.getElementById(this.CanvasContainerId);
-            
+            var relativePos = this.GetRelativePos();
+
+            var origX = canvasContainer.getAttribute("relativeX");
+            var origY = canvasContainer.getAttribute("relativeY");
+
+            if (origX == relativePos.x && origY == relativePos.y) {
+                return;
+            }
+
+            var shape: shape.ShapeBase;
+            for (shape of shapes) {
+                var div = shape.MetadataHtmlElement;
+                var pos = shape.GetPosition();
+
+                this.SetDivAbsolutePosition(div, relativePos.x, relativePos.y, pos.X, pos.Y);
+            }
+
+            //update new positions
+            canvasContainer.setAttribute("relativeX", relativePos.x);
+            canvasContainer.setAttribute("relativeY", relativePos.y);
+
+
+        }
+
+        /**
+         * return the relative position of the canvas.
+         * this is important because we have to absolutly position the divs.
+         */
+        private GetRelativePos() {
+            var canvasContainer = document.getElementById(this.CanvasContainerId);
+
+
             var svgOffset = document.getElementsByTagName("svg")[0].getBoundingClientRect();
             var bodyOffset = canvasContainer.parentElement.parentElement.getBoundingClientRect();
 
@@ -71,65 +118,58 @@ module flowchart {
             var relativeX = svgOffset.left - bodyOffset.left + ppLeft;
             var relativeY = (svgOffset.top - bodyOffset.top) + ppTop;
 
-            var absoluteX = relativeX+ posX;
-            var absoluteY = relativeY+ posY;
+            return { x: relativeX, y: relativeY };
+        }
+
+        /**
+         * set the absolute position of the current div.
+         * @param metadataDiv
+         * @param relativeX relative x-pos of the canvas which is the 0-pos of the div.
+         * @param relativeY relative y-pos of the canvas which is the 0-pos of the div
+         * @param x
+         * @param y
+         */
+        private SetDivAbsolutePosition(metadataDiv: HTMLDivElement, relativeX:number, relativeY:number, x:number, y:number) {
+
+            var absoluteX:any = relativeX + x;
+            var absoluteY:any = relativeY + y;
+
+            metadataDiv.style.left = absoluteX + "px";
+            metadataDiv.style.top = absoluteY + "px";
+            
+            metadataDiv.setAttribute("x", absoluteX);
+            metadataDiv.setAttribute("y", absoluteY);
+        }
+
+        SetMetadata(shape: shape.ShapeBase, metadata: shape.metadata.IShapeMetadata, posX: number, posY: number) {
+           // shape.RaphaelMetadata = metadataElement;
+            
+            var canvasContainer = document.getElementById(this.CanvasContainerId);
+
+            var relativePos = this.GetRelativePos();
+
+            canvasContainer.setAttribute("relativeX", relativePos.x);
+            canvasContainer.setAttribute("relativeY", relativePos.y);
+
+            //var absoluteX = relativePos.x+ posX;
+            //var absoluteY = relativePos.y+ posY;
 
 
             var metadataDiv = document.createElement("div");
-            var x = "";
-            var y = x;
-            var z = x;
-            var z1 = z;
-
-            //metadataDiv.className = shape.CssBackgroundClass;
-            //metadataDiv.classList.add(shape.CssBackgroundClass);
             
             metadataDiv.style.cssText =     "width:" + shape.Width + "px;" +
                                             "height:" + shape.Height + "px;" +
-                                            "background-color:red; " +
+                                            //"border: 1px solid red; " +
                                             "position:absolute; " +
-                                            "left:" + absoluteX + "px;" +
-                                            "top:"+ absoluteY+"px;"+
                                             "z-index:1";
 
-            metadataDiv.setAttribute("x",absoluteX);
-            metadataDiv.setAttribute("y", absoluteY);
-            
-            
+            this.SetDivAbsolutePosition(metadataDiv, relativePos.x, relativePos.y,posX,posY);
 
             shape.MetadataHtmlElement = metadataDiv;
 
             canvasContainer.parentElement.appendChild(metadataDiv);
             this.UpdateMetadata(shape, metadata);
         }
-
-        //SetMetadata(shape: shape.ShapeBase, metadata: shape.metadata.IShapeMetadata, posX:number, posY:number) {
-            
-        //    var svgRoot = this.Paper.canvas;
-        //    var metadataElement: SVGForeignObjectElement = document.createElementNS("http://www.w3.org/2000/svg", "foreignObject");
-        //    //TODO http://stackoverflow.com/questions/13848039/svg-foreignobject-contents-do-not-display-unless-plain-text
-
-        //     //metadata.innerHTML = "<i class='fa fa-sitemap'></i>";
-        //    metadataElement.setAttributeNS(null, "width", String(shape.Width));
-        //    metadataElement.setAttributeNS(null, "height", String(shape.Height));
-        //    metadataElement.setAttributeNS(null, "x", String(posX));
-        //    metadataElement.setAttributeNS(null, "y", String(posY));
-        //    metadataElement.setAttributeNS(null, "style", "padding:1px");
-
-        //    //var x = document.createElementNS("http://www.w3.org/1999/xhtml", "div");
-        //    //x.setAttribute("xmlns", "http://www.w3.org/1999/xhtml");
-        //    //metadataElement.appendChild(x);
-
-        //    //we first add the metadata, that it will be behind the real raphaeljs object
-        //    //when the raphaeljs element is transparent we see the metadata shining through
-        //    //and still have all drag&drop functionallity of the raphaeljs-element.
-        //    svgRoot.appendChild(metadataElement);//1st
-
-        //    shape.RaphaelMetadata = metadataElement;
-
-        //    this.UpdateMetadata(shape, metadata);
-
-        //}
 
         UpdateMetadata(shape: shape.ShapeBase, metadata: shape.metadata.IShapeMetadata) {
 
@@ -140,10 +180,11 @@ module flowchart {
             //if (!shape.RaphaelMetadata)
             //    throw "UpdateMetadata: Shape.RapahelMetadata is null";
 
-            var div = shape.GetMetadataDiv();
-            var metaHtml = metadata.GetHtml();
+            var div = shape.GetMetadataDiv(); //new div element
+            var metaHtml = metadata.GetHtml(); //html-content
 
             metaHtml.classList.add(shape.CssContentClass);
+            //metaHtml.classList.add(shape.CssClass);
             div.appendChild(metaHtml);
 
 

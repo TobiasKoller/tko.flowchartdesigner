@@ -3,15 +3,15 @@ module flowchart {
         ShapeConnectionType: constants.ConnectionDrawerType;
         ShapeConnection: connection.drawer.IConnectionDrawer;
         IsInitialized: boolean = false;
-
-        ColorSelectedShape: string = "yellow";
-        ColorSelectedConnection: string = "yellow";
+        
+        Colors: FlowChartColors;
 
         EnableEvents: boolean = true;
 
 
         constructor(shapeConnectionType: constants.ConnectionDrawerType=constants.ConnectionDrawerType.Curved) {
             this.ShapeConnectionType = shapeConnectionType;
+            this.Colors = new FlowChartColors();
         }
 
         Init(paper: RaphaelPaper) {

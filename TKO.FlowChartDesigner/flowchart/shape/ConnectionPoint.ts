@@ -9,24 +9,6 @@ module flowchart.shape {
 
             this.PointType = type;
             this.Position = position;
-
-            var t = constants.ConnectionPointType;
-            switch (type) {
-                case t.Incoming:
-                    this.CssBackgroundClass = "connection_point_incoming";
-                    this.CssContentClass = "";
-                    break;
-                case t.OutgoingTrueSuccess:
-                    this.CssBackgroundClass = "connection_point_outgoing_true_success";
-                    this.CssContentClass = "";
-                    break;
-
-                case t.OutgoingFalseError:
-                    this.CssBackgroundClass = "connection_point_outgoing_false_error";
-                    this.CssContentClass = "";
-                break;
-            default:
-            }
         }
         
 
@@ -56,10 +38,10 @@ module flowchart.shape {
             var element = paper.circle(x, y, pointWidth);
             element.data("shape", this);
 
-            var cssClass = common.DomHelper.GetCssClass(this.CssBackgroundClass);
-            if (cssClass)
-                element.attr({ fill: cssClass.style["background-color"] });
-
+            //var cssClass = common.DomHelper.GetCssClass(this.CssBackgroundClass);
+            //if (cssClass)
+            //    element.attr({ fill: cssClass.style["background-color"] });
+            
             if (this.PointType != constants.ConnectionPointType.Incoming) {
                 //add cursor:pointer because these points are draggable
                 element.attr({ cursor: "crosshair" });

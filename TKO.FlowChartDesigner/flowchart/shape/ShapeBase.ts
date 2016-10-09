@@ -26,7 +26,7 @@
             this.CssBackgroundClass = cssClassPrefix + "_background";
             this.CssContentClass = cssClassPrefix + "_content";
             this.Metadata = metadata ? metadata : new shape.metadata.Html("");
-            this.RaphaelAttr = { fill: "white", stroke: "black", "fill-opacity": 0, "stroke-width": 1, cursor: "move" };
+            this.RaphaelAttr = { fill: "white", stroke: "black", "fill-opacity": 0, "stroke-width": 0, cursor: "move" };
         }
 
         GetContainingElements(): any[] {
@@ -70,9 +70,12 @@
         OnMove(x: number, y: number) {
             var elements = this.GetContainingElements();
 
-            var metadataElement: any = this.MetadataHtmlElement;
-            this.MetadataHtmlElement.style.left = (metadataElement.ox+x)+"px";
-            this.MetadataHtmlElement.style.top = (metadataElement.oy+y)+"px";
+            if (this.MetadataHtmlElement) {
+                var metadataElement: any = this.MetadataHtmlElement;
+                this.MetadataHtmlElement.style.left = (metadataElement.ox + x) + "px";
+                this.MetadataHtmlElement.style.top = (metadataElement.oy + y) + "px";
+            }
+           
 
             for (var element of elements) {
                 var newX = element.ox + x;
@@ -154,8 +157,12 @@
             //if(this.RaphaelMetadata)
             //    this.RaphaelMetadata.remove();
 
-            if (this.MetadataHtmlElement)
-                this.MetadataHtmlElement.remove();
+            if (this.MetadataHtmlElement) {
+                if (this.MetadataHtmlElement.remove)
+                    this.MetadataHtmlElement.remove();
+                else //workaround for IE
+                    this.MetadataHtmlElement.parentElement.removeChild(this.MetadataHtmlElement);
+            }
 
             var cp: ConnectionPoint;
             for (cp of this.ConnectionPoints) {
@@ -164,13 +171,50 @@
         }
 
 
-        SetCssContentClass(className: string) {
-            this.CssContentClass = className;
+        //SetCssContentClass(className: string) {
+        //    this.CssContentClass = className;
+        //}
+
+        //abstract DrawShape(paper: RaphaelPaper, posX: number, posY: number);
+        abstract GetMetadataDiv(): HTMLDivElement;
+        //abstract GetPosition():model.ShapePosition;
+        //abstract SetPosition(x: number, y: number);
+
+        DrawShape(paper: RaphaelPaper, posX: number, posY: number): RaphaelElement {
+            var element = paper.rect(posX, posY, this.Width, this.Height);
+            element.attr(this.RaphaelAttr);
+            return element;
         }
 
-        abstract DrawShape(paper: RaphaelPaper, posX: number, posY: number);
-        abstract GetMetadataDiv(): HTMLDivElement;
-        abstract GetPosition():model.ShapePosition;
-        abstract SetPosition(x: number, y: number);
+
+        GetPosition(): model.ShapePosition {
+            return new model.ShapePosition(this.RaphaelElement.attr("x"), this.RaphaelElement.attr("y"));
+            //return { x: this.RaphaelElement.attr("x"), y: this.RaphaelElement.attr("y") };
+        }
+
+        SetPosition(posX: number, posY: number) {
+            this.RaphaelElement.attr({ x: posX, y: posY });
+        }
+
+
+        OnSelect(options: FlowChartOptions) {
+            //this.RaphaelElement.data("origStroke", this.RaphaelElement.attr("stroke"));
+            //this.RaphaelElement.attr("stroke", options.Colors.ShapeSelected);
+
+            if (this.MetadataHtmlElement) {
+                this.MetadataHtmlElement.classList.add(this.CssBackgroundClass + "_selected");
+                this.MetadataHtmlElement.firstElementChild.classList.add(this.CssContentClass + "_selected");
+            }
+        }
+
+        OnUnselect(options: FlowChartOptions) {
+            //var color = this.RaphaelElement.data("origStroke");
+            //this.RaphaelElement.attr("stroke", color);
+
+            if (this.MetadataHtmlElement) {
+                this.MetadataHtmlElement.classList.remove(this.CssBackgroundClass + "_selected");
+                this.MetadataHtmlElement.firstElementChild.classList.remove(this.CssContentClass + "_selected");
+            }
+        }
     }
 }

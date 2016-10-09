@@ -69,7 +69,7 @@ module flowchart {
                 return false;
 
             var point: shape.ConnectionPoint = <shape.ConnectionPoint>(connectionPointShape);
-            console.log(point.PointType);
+            
 
             for (var type of types) {
                 if (point.PointType == type)
@@ -280,7 +280,7 @@ module flowchart {
         /**
          * returns true, if user is currently dragging an connection.
          */
-        private IsDragging():boolean {
+        IsDragging():boolean {
             return this.DragConnection != null;
         }
 
