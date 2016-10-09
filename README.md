@@ -47,7 +47,7 @@ In this example I used this css for the canvas-div.
     var wc = new flowchart.FlowChart("myCanvas",options);
 ```
 ###Options
-the following-objects are available to customize the flowchart
+the following options are available to customize the flowchart
 
 ```javascript
 //connection-types
@@ -68,7 +68,8 @@ the following-objects are available to customize the flowchart
     options.Colors.ConnectionPointTrueSuccess = "green";
     options.Colors.ConnectionPointFalseError = "red";
 ```
-everything else can be changed with the css-file.
+everything else can be changed within the css-file tko.flowchartdesigner.css.
+
 ##3. Add Shapes
 ###Create shapes
 ```javascript
