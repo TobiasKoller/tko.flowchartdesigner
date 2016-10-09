@@ -46,7 +46,29 @@ In this example I used this css for the canvas-div.
     var options = new flowchart.FlowChartOptions();
     var wc = new flowchart.FlowChart("myCanvas",options);
 ```
+###Options
+the following-objects are available to customize the flowchart
 
+```javascript
+//connection-types
+    //curved
+    options.ShapeConnectionType = constants.ConnectionDrawerType.Curved;
+    //straight
+    options.ShapeConnectionType = constants.ConnectionDrawerType.Straight;
+
+//colors
+    //Shape
+    options.Colors.ShapeSelected = "blue";
+
+    //Connection
+    options.Colors.ConnectionSelected = "blue";
+
+    //connectionpoints
+    options.Colors.ConnectionPointIncoming = "white";
+    options.Colors.ConnectionPointTrueSuccess = "green";
+    options.Colors.ConnectionPointFalseError = "red";
+```
+everything else can be changed with the css-file.
 ##3. Add Shapes
 ###Create shapes
 ```javascript
