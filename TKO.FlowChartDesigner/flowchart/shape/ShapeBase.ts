@@ -17,7 +17,7 @@
 
 
 
-        constructor(id: string, type: constants.ShapeType, width, height, metadata: shape.metadata.IShapeMetadata, cssClassPrefix: string) {
+        constructor(id: string, type: constants.ShapeType, width, height, htmlText:string, cssClassPrefix: string) {
             super();
             this.Id = id;
             this.Type = type;
@@ -25,7 +25,7 @@
             this.Height = height;
             this.CssBackgroundClass = cssClassPrefix + "_background";
             this.CssContentClass = cssClassPrefix + "_content";
-            this.Metadata = metadata ? metadata : new shape.metadata.Html("");
+            this.Metadata = new shape.metadata.Html(htmlText);
             this.RaphaelAttr = { fill: "white", stroke: "black", "fill-opacity": 0, "stroke-width": 0, cursor: "move" };
         }
 

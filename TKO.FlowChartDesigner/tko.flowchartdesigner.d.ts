@@ -60,7 +60,7 @@ declare module flowchart.shape {
         ParentShape: ShapeBase;
         ConnectionPoints: shape.ConnectionPoint[];
         Connections: connection.ShapeConnection[];
-        constructor(id: string, type: constants.ShapeType, width: any, height: any, metadata: shape.metadata.IShapeMetadata, cssClassPrefix: string);
+        constructor(id: string, type: constants.ShapeType, width: any, height: any, htmlText: string, cssClassPrefix: string);
         GetContainingElements(): any[];
         BeforeMove(x: number, y: number): void;
         SetRaphaelShapeReference(): void;
@@ -91,13 +91,13 @@ declare module flowchart.shape {
 }
 declare module flowchart.shape {
     class Process extends ShapeBase {
-        constructor(id: string, width: any, height: any, metadata?: shape.metadata.IShapeMetadata);
+        constructor(id: string, width: any, height: any, htmlText?: string);
         GetMetadataDiv(): HTMLDivElement;
     }
 }
 declare module flowchart.shape {
     class Decision extends ShapeBase {
-        constructor(id: string, width: any, height: any, metadata?: shape.metadata.IShapeMetadata);
+        constructor(id: string, width: any, height: any, htmlText?: string);
         GetMetadataDiv(): HTMLDivElement;
     }
 }
@@ -583,11 +583,8 @@ declare module flowchart.shape {
 }
 declare module flowchart.shape.metadata {
     class Html implements IShapeMetadata {
-        Label: string;
-        Icon: string;
         Html: HTMLElement;
-        constructor(label?: string, icon?: string);
-        private CreateHtml();
+        constructor(htmlText: string);
         /**
          * Set the containing HTML
          * @param htmlElement
@@ -614,7 +611,7 @@ declare module flowchart.shape.metadata {
 }
 declare module flowchart.shape {
     class Terminal extends ShapeBase {
-        constructor(id: string, width: any, height: any, metadata?: shape.metadata.IShapeMetadata);
+        constructor(id: string, width: any, height: any, htmlText: string);
         GetMetadataDiv(): HTMLDivElement;
     }
 }

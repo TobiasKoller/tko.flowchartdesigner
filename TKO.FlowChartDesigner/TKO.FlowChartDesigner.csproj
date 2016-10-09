@@ -32,7 +32,9 @@
     <Content Include="demo\demo1.html" />
     <Content Include="dist\tko.flowchartdesigner.css" />
     <Content Include="dist\tko.flowchartdesigner.js" />
-    <Content Include="dist\tko.flowchartdesigner.min.js" />
+    <Content Include="dist\tko.flowchartdesigner.min.js">
+      <DependentUpon>tko.flowchartdesigner.js</DependentUpon>
+    </Content>
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="packages.config" />
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
@@ -57,6 +59,7 @@
     <Content Include="Scripts\raphael.js" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="CHANGELOG" />
     <TypeScriptCompile Include="common\DomHelper.ts" />
     <TypeScriptCompile Include="flowchart\FlowChartColors.ts" />
     <TypeScriptCompile Include="flowchart\ModelLoader.ts" />

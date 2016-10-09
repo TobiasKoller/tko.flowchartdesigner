@@ -1,8 +1,8 @@
 module flowchart.shape {
     export class Terminal extends ShapeBase {
 
-        constructor(id: string, width, height, metadata: shape.metadata.IShapeMetadata = null) {
-            super(id, constants.ShapeType.Terminal, width, height, metadata, "shape_terminal");
+        constructor(id: string, width, height, htmlText: string) {
+            super(id, constants.ShapeType.Terminal, width, height, htmlText, "shape_terminal");
         }
 
 

@@ -48,7 +48,7 @@ var flowchart;
     (function (shape) {
         var ShapeBase = (function (_super) {
             __extends(ShapeBase, _super);
-            function ShapeBase(id, type, width, height, metadata, cssClassPrefix) {
+            function ShapeBase(id, type, width, height, htmlText, cssClassPrefix) {
                 _super.call(this);
                 this.ConnectionPoints = [];
                 this.Connections = [];
@@ -58,7 +58,7 @@ var flowchart;
                 this.Height = height;
                 this.CssBackgroundClass = cssClassPrefix + "_background";
                 this.CssContentClass = cssClassPrefix + "_content";
-                this.Metadata = metadata ? metadata : new shape.metadata.Html("");
+                this.Metadata = new shape.metadata.Html(htmlText);
                 this.RaphaelAttr = { fill: "white", stroke: "black", "fill-opacity": 0, "stroke-width": 0, cursor: "move" };
             }
             ShapeBase.prototype.GetContainingElements = function () {
@@ -223,9 +223,9 @@ var flowchart;
     (function (shape) {
         var Process = (function (_super) {
             __extends(Process, _super);
-            function Process(id, width, height, metadata) {
-                if (metadata === void 0) { metadata = null; }
-                _super.call(this, id, flowchart.constants.ShapeType.Process, width, height, metadata, "shape_process");
+            function Process(id, width, height, htmlText) {
+                if (htmlText === void 0) { htmlText = ""; }
+                _super.call(this, id, flowchart.constants.ShapeType.Process, width, height, htmlText, "shape_process");
             }
             Process.prototype.GetMetadataDiv = function () {
                 var element = document.createElement("div");
@@ -243,9 +243,9 @@ var flowchart;
     (function (shape) {
         var Decision = (function (_super) {
             __extends(Decision, _super);
-            function Decision(id, width, height, metadata) {
-                if (metadata === void 0) { metadata = null; }
-                _super.call(this, id, flowchart.constants.ShapeType.Decision, width, height, metadata, "shape_decision");
+            function Decision(id, width, height, htmlText) {
+                if (htmlText === void 0) { htmlText = ""; }
+                _super.call(this, id, flowchart.constants.ShapeType.Decision, width, height, htmlText, "shape_decision");
             }
             //overridden
             Decision.prototype.GetMetadataDiv = function () {
@@ -1638,21 +1638,14 @@ var flowchart;
         var metadata;
         (function (metadata) {
             var Html = (function () {
-                function Html(label, icon) {
-                    if (icon === void 0) { icon = ""; }
-                    this.Label = label;
-                    this.Icon = icon;
-                    this.CreateHtml();
-                }
-                Html.prototype.CreateHtml = function () {
+                function Html(htmlText) {
                     var htmlElement = document.createElement("div");
                     htmlElement.style.width = "100%";
                     htmlElement.style.height = "100%";
-                    //htmlElement.style.position = "absolute";
-                    htmlElement.innerHTML =
-                        "   <div>" + this.Label + "</div>";
+                    //"   <div>" + this.Label + "</div>";
                     this.Html = htmlElement;
-                };
+                    this.SetHtmlText(htmlText);
+                }
                 /**
                  * Set the containing HTML
                  * @param htmlElement
@@ -1685,9 +1678,8 @@ var flowchart;
     (function (shape) {
         var Terminal = (function (_super) {
             __extends(Terminal, _super);
-            function Terminal(id, width, height, metadata) {
-                if (metadata === void 0) { metadata = null; }
-                _super.call(this, id, flowchart.constants.ShapeType.Terminal, width, height, metadata, "shape_terminal");
+            function Terminal(id, width, height, htmlText) {
+                _super.call(this, id, flowchart.constants.ShapeType.Terminal, width, height, htmlText, "shape_terminal");
             }
             //overridden
             Terminal.prototype.GetMetadataDiv = function () {

@@ -2,8 +2,8 @@ module flowchart.shape {
 
     export class Process extends ShapeBase {
         
-        constructor(id: string, width, height, metadata: shape.metadata.IShapeMetadata=null) {
-            super(id, constants.ShapeType.Process, width, height, metadata, "shape_process");
+        constructor(id: string, width, height, htmlText = "") {
+            super(id, constants.ShapeType.Process, width, height, htmlText, "shape_process");
         }
 
         GetMetadataDiv():HTMLDivElement {

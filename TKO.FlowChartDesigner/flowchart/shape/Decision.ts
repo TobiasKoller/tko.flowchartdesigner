@@ -1,8 +1,8 @@
 module flowchart.shape {
     export class Decision extends ShapeBase {
         
-        constructor(id: string, width, height, metadata: shape.metadata.IShapeMetadata=null) {
-            super(id, constants.ShapeType.Decision, width, height, metadata, "shape_decision");
+        constructor(id: string, width, height, htmlText="") {
+            super(id, constants.ShapeType.Decision, width, height, htmlText, "shape_decision");
         }
         
         //overridden
