@@ -21,6 +21,7 @@ declare module flowchart.shape {
         AddConnection(connection: connection.ShapeConnection): any;
         CalculateConnectionPointCoord(position: constants.ConnectionPointPosition, pointWidth: number, pointHeight: number): any;
         DrawShape(paper: RaphaelPaper, posX: number, posY: number): any;
+        SetCssContentClass(className: string): any;
         GetMetadataDiv(): HTMLDivElement;
         GetPosition(): model.ShapePosition;
         SetPosition(x: number, y: number): any;
@@ -83,6 +84,7 @@ declare module flowchart.shape {
         Delete(): void;
         abstract GetMetadataDiv(): HTMLDivElement;
         DrawShape(paper: RaphaelPaper, posX: number, posY: number): RaphaelElement;
+        SetCssContentClass(className: string): void;
         GetPosition(): model.ShapePosition;
         SetPosition(posX: number, posY: number): void;
         OnSelect(options: FlowChartOptions): void;

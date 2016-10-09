@@ -105,7 +105,7 @@
             }
         }
 
-        window.onload = () => {
+        window.onload = function () {
 
             var options = new flowchart.FlowChartOptions();
             options.ShapeConnectionType = flowchart.constants.ConnectionDrawerType.Curved;
@@ -248,13 +248,13 @@
                 return true;
             });
 
-            setTimeout(() => {
+            setTimeout(function() {
                 //var metadata = s2.Metadata;
                 //metadata.SetHtmlText("<div>test xyz</div>");
                 s3.SetCssContentClass("test_shape_process_content");
                 wc.UpdateShapeMetadata(s3);
 
-                setTimeout(() => {
+                setTimeout(function () {
                     var metadata = s3.Metadata;
                     metadata.SetHtmlText("<div>xxx</div>");
 

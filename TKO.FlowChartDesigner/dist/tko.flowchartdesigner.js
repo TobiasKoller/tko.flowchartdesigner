@@ -189,6 +189,9 @@ var flowchart;
                 element.attr(this.RaphaelAttr);
                 return element;
             };
+            ShapeBase.prototype.SetCssContentClass = function (className) {
+                this.CssContentClass = className;
+            };
             ShapeBase.prototype.GetPosition = function () {
                 return new flowchart.model.ShapePosition(this.RaphaelElement.attr("x"), this.RaphaelElement.attr("y"));
                 //return { x: this.RaphaelElement.attr("x"), y: this.RaphaelElement.attr("y") };

@@ -186,6 +186,9 @@
             return element;
         }
 
+        SetCssContentClass(className: string) {
+            this.CssContentClass = className;
+        }
 
         GetPosition(): model.ShapePosition {
             return new model.ShapePosition(this.RaphaelElement.attr("x"), this.RaphaelElement.attr("y"));
