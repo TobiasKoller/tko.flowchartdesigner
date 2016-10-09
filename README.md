@@ -107,6 +107,7 @@ everything else can be changed within the css-file tko.flowchartdesigner.css.
     ...
 ```
 Every shape can have up to 4 connection-points. they are located left,top,right,bottom.
+
 **Parameter**
 
 1. Type-Enum, if its an incoming,outgoing(succes) or outgoing(error)
@@ -123,6 +124,7 @@ Every shape can have up to 4 connection-points. they are located left,top,right,
     wc.AddShape(s5, 350, 440);
 ```
 Adds the shape to the canvas.
+
 **Parameter**
 
 1. the shape-object we created above
@@ -141,6 +143,7 @@ Adds the shape to the canvas.
     wc.ConnectShapes(s4, s5, cPos.Bottom, cPos.Top);
 ```
 Connects the shapes with a line.
+
 **Parameter**
 
 1. Shape-Object FROM
