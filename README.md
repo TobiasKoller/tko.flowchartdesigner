@@ -20,7 +20,6 @@ Tested with current versions of Edge, IE, Chrome, Firefox
 ###javascript
 ```html
     <script src="../Scripts/jquery-1.9.1.min.js"></script>
-    <script src="../Scripts/bootstrap.min.js"></script>
     <script src="../Scripts/raphael-min.js"></script>
     <script src="../dist/tko.flowchartdesigner.js"></script>
 ```
