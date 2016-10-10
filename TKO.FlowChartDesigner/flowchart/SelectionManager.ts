@@ -48,6 +48,25 @@
                         }
                         else if (element instanceof flowchart.shape.ShapeBase) {
                             shapes.push(element);
+
+                            var s: flowchart.shape.ShapeBase = element;
+                            var c: flowchart.connection.ShapeConnection;
+
+                            for (c of s.Connections) { //iterate through all connections óf the shape and add them to the deletion-list.
+
+                                var found: boolean = false;
+
+                                for (var tmpConnection of connections) {//iterate through already for deletion marked connections to check if connection is already marked.
+                                    if (tmpConnection.Id == c.Id) {
+                                        found = true; //nothing more to do.
+                                        break;
+                                    }
+                                }    
+
+                                if (!found) { //not found? add it now.
+                                    connections.push(c);
+                                }
+                            }
                         }
                     }
 

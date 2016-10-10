@@ -43,7 +43,6 @@
             this.connector = new ShapeConnector(this.drawer.Paper, options, this.eventHandler);
             this.mover = new ShapeMover(this.connector, this.drawer.Paper, options, this.eventHandler);
 
-
             
             this.CheckCanvasPosition();
             //document.body.onkeydown = (event) => {
@@ -58,6 +57,7 @@
          * checks the position of the divs and updates them if anything moved on the page.
          */
         private CheckCanvasPosition() {
+
             setTimeout(() => {
                 this.drawer.UpdateWrapperPosition(this.model.Shapes);
                 this.CheckCanvasPosition();

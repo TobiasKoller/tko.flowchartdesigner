@@ -26,6 +26,7 @@ module flowchart {
             var nHeight = height !== 0 ? height : '100%';
 
             this.Paper.setSize(nWidth, nHeight);
+            
         }
 
   
