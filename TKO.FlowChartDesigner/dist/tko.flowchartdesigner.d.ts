@@ -323,8 +323,8 @@ declare module flowchart.constants {
      * type of the connection between two shapes.
      */
     enum ConnectionType {
-        TrueSucces = 1,
-        FalseError = 2,
+        TrueSucces = 0,
+        FalseError = 1,
     }
 }
 declare module flowchart.constants {

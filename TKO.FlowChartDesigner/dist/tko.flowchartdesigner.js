@@ -917,8 +917,8 @@ var flowchart;
          * type of the connection between two shapes.
          */
         (function (ConnectionType) {
-            ConnectionType[ConnectionType["TrueSucces"] = 1] = "TrueSucces";
-            ConnectionType[ConnectionType["FalseError"] = 2] = "FalseError";
+            ConnectionType[ConnectionType["TrueSucces"] = 0] = "TrueSucces";
+            ConnectionType[ConnectionType["FalseError"] = 1] = "FalseError";
         })(constants.ConnectionType || (constants.ConnectionType = {}));
         var ConnectionType = constants.ConnectionType;
     })(constants = flowchart.constants || (flowchart.constants = {}));
