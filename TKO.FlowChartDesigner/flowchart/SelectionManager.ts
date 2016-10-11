@@ -36,7 +36,7 @@
 
                 if (event.keyCode == 46) { //46=delete
                     if (this.SelectedElements.length === 0)
-                        return false;
+                        return true; //return true because maybe another part outside this library is using this event.
 
                     var shapes: any[] = [];
                     var connections: any[] = [];
@@ -71,7 +71,7 @@
                     }
 
                     if (this.eventHandler.Notify(constants.EventType.BeforeDelete, new model.EventParamDeleteList(shapes, connections))===false)
-                        return false;
+                        return true; //return true because maybe another part outside this library is using this event.
 
                     //delete elements
                     this.DeleteElements();

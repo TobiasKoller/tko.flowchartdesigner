@@ -1345,7 +1345,7 @@ var flowchart;
                 _this.IsCtrl = event.keyCode === 17; //17=ctrl
                 if (event.keyCode == 46) {
                     if (_this.SelectedElements.length === 0)
-                        return false;
+                        return true; //return true because maybe another part outside this library is using this event.
                     var shapes = [];
                     var connections = [];
                     //iterate through all selected elements and throw the before and after events.
@@ -1375,7 +1375,7 @@ var flowchart;
                         }
                     }
                     if (_this.eventHandler.Notify(flowchart.constants.EventType.BeforeDelete, new flowchart.model.EventParamDeleteList(shapes, connections)) === false)
-                        return false;
+                        return true; //return true because maybe another part outside this library is using this event.
                     //delete elements
                     _this.DeleteElements();
                     _this.eventHandler.Notify(flowchart.constants.EventType.AfterDelete, new flowchart.model.EventParamDeleteList(shapes, connections));

@@ -1,6 +1,9 @@
 ﻿
 2016-10-09
 
+v_dev
+- del-key-event fix.
+
 v1.0.3.0
 - adding unique id to the svg that it can easly get accessed by id and to be sure that we operate on the correct one ;)
 - Delete event only contained the shape if shape was deleted. now it also has the dependend connections because the get deleted, too.
