@@ -26,6 +26,7 @@
         CalculateConnectionPointCoord(position: constants.ConnectionPointPosition, pointWidth: number, pointHeight: number): any;
         DrawShape(paper: RaphaelPaper, posX: number, posY: number);
         SetCssContentClass(className: string);
+        SetCssBackgroundClass(className: string);
         GetMetadataDiv(): HTMLDivElement;
         GetPosition():model.ShapePosition;
         SetPosition(x: number, y: number);
