@@ -3,6 +3,7 @@
 
 v_dev
 - del-key-event fix.
+- SetCssBackgroundClass added to shape.
 
 v1.0.3.0
 - adding unique id to the svg that it can easly get accessed by id and to be sure that we operate on the correct one ;)
