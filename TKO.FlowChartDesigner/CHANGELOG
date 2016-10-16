@@ -2,8 +2,11 @@
 2016-10-09
 
 v_dev
+
+v1.0.4.0
 - del-key-event fix.
 - SetCssBackgroundClass added to shape.
+- SetFixed(shape, isFixed) method in FlowChart to fix the shape at a position.
 
 v1.0.3.0
 - adding unique id to the svg that it can easly get accessed by id and to be sure that we operate on the correct one ;)

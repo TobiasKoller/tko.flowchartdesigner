@@ -2066,7 +2066,7 @@ var flowchart;
     flowchart.ShapeMover = ShapeMover;
 })(flowchart || (flowchart = {}));
 /*!
-* TKO.FlowchartDesigner v1.0.3.0
+* TKO.FlowchartDesigner v1.0.4.0
 * License: MIT
 * Created By: Tobias Koller
 * Git: https://github.com/TobiasKoller/tko.flowchartdesigner
