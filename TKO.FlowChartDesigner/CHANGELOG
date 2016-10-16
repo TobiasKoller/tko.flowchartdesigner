@@ -1,9 +1,8 @@
 ﻿
-2016-10-09
 
 v_dev
 
-v1.0.4.0
+v1.0.4.0 - 2016_16_10
 - del-key-event fix.
 - SetCssBackgroundClass added to shape.
 - SetFixed(shape, isFixed) method in FlowChart to fix the shape at a position.
