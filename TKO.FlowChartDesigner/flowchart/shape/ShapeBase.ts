@@ -14,7 +14,7 @@
         ParentShape: ShapeBase;
         ConnectionPoints: shape.ConnectionPoint[] = [];
         Connections: connection.ShapeConnection[] = [];
-
+        IsFixed: boolean = false;
 
 
         constructor(id: string, type: constants.ShapeType, width, height, htmlText:string, cssClassPrefix: string) {

@@ -52,6 +52,7 @@ var flowchart;
                 _super.call(this);
                 this.ConnectionPoints = [];
                 this.Connections = [];
+                this.IsFixed = false;
                 this.Id = id;
                 this.Type = type;
                 this.Width = width;
@@ -618,6 +619,13 @@ var flowchart;
          */
         FlowChart.prototype.RegisterConnectionDrawer = function (enumValue, classNamespace) {
             this.namespaceRegistrator.RegisterConnectionDrawer(enumValue, classNamespace);
+        };
+        /**
+     * set the shape at a fixed position or moveable.
+     * @param isFixed
+     */
+        FlowChart.prototype.SetFixed = function (shape, isFixed) {
+            this.mover.FixShape(shape, isFixed);
         };
         FlowChart.prototype.CheckShapeHasRaphaelElement = function (shape) {
             if (!shape)
@@ -1810,6 +1818,19 @@ var flowchart;
             this.eventHandler = eventHandler;
             this.Paper = paper;
         }
+        ShapeMover.prototype.FixShape = function (shape, isFixed) {
+            shape.IsFixed = isFixed;
+            if (isFixed) {
+                shape.RaphaelElement.attr("cursor", "");
+                shape.RaphaelElement.undrag();
+            }
+            else {
+                shape.IsFixed = isFixed;
+                shape.RaphaelElement.attr("cursor", "move");
+                shape.RaphaelElement.undrag();
+                shape.RaphaelElement.drag(this.GetOnMoveStart(shape), this.GetDragger(shape), this.GetOnMoveFinished(shape));
+            }
+        };
         /**
          * registers an shape to be draggable
          * @param shape
@@ -1936,7 +1957,6 @@ var flowchart;
             //Example: http://jsfiddle.net/CHUrB/
             var self = this;
             return function (x, y, event) {
-                // Original coords for main element
                 self.CurrentDraggedShapeType = shape.Type;
                 shape.BeforeMove(x, y);
                 if (self.IsConnectionPoint(this)) {

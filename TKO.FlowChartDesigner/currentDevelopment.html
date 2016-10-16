@@ -253,11 +253,15 @@
                 s3.SetCssContentClass("test_shape_process_content");
                 wc.UpdateShapeMetadata(s3);
 
+                wc.SetFixed(s3, true);
+
                 setTimeout(function () {
                     var metadata = s3.Metadata;
                     metadata.SetHtmlText("<div>xxx</div>");
 
                     wc.UpdateShapeMetadata(s3, metadata);
+
+                    //wc.SetFixed(s3, false);
                 }, 5000);
             }, 5000);
 

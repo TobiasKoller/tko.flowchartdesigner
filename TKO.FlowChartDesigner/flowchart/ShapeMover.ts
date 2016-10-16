@@ -18,6 +18,23 @@ module flowchart {
             this.Paper = paper;
         }
 
+        FixShape(shape: shape.ShapeBase, isFixed:boolean) {
+
+            shape.IsFixed = isFixed;
+
+            if (isFixed) {
+                shape.RaphaelElement.attr("cursor", "");
+                shape.RaphaelElement.undrag();
+            } else {
+                shape.IsFixed = isFixed;
+                shape.RaphaelElement.attr("cursor", "move");
+                shape.RaphaelElement.undrag();
+                shape.RaphaelElement.drag(this.GetOnMoveStart(shape), this.GetDragger(shape), this.GetOnMoveFinished(shape));
+            }
+            
+
+        }
+
         /**
          * registers an shape to be draggable
          * @param shape
@@ -84,7 +101,8 @@ module flowchart {
          * @param shape
          */
         private GetOnMoveStart(shape: shape.ShapeBase) {
-            var self:ShapeMover = this;
+
+            var self: ShapeMover = this;
             return function (dx: number, dy: number, x: number, y: number, event: DragEvent): any {
 
                 //moves the shape to new x,y coordinates
@@ -110,7 +128,9 @@ module flowchart {
          * @param shape
          */
         private GetOnMoveFinished(shape: shape.ShapeBase) {
-            var self:ShapeMover = this;
+
+            
+            var self: ShapeMover = this;
 
             return function (DragEvent: any): any {
 
@@ -179,9 +199,7 @@ module flowchart {
             //Example: http://jsfiddle.net/CHUrB/
             var self = this;
             return function (x: number, y: number, event: DragEvent): any {
-
-                // Original coords for main element
-
+                
                 self.CurrentDraggedShapeType = shape.Type;
 
                 shape.BeforeMove(x,y);

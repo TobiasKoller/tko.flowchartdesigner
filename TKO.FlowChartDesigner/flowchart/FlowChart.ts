@@ -262,6 +262,14 @@
             this.namespaceRegistrator.RegisterConnectionDrawer(enumValue, classNamespace);
         }
 
+        /**
+     * set the shape at a fixed position or moveable.
+     * @param isFixed
+     */
+        SetFixed(shape:shape.ShapeBase, isFixed: boolean) {
+            this.mover.FixShape(shape, isFixed);
+        }
+        
         
         private CheckShapeHasRaphaelElement(shape: shape.IShape) {
             if (!shape)

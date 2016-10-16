@@ -62,6 +62,7 @@ declare module flowchart.shape {
         ParentShape: ShapeBase;
         ConnectionPoints: shape.ConnectionPoint[];
         Connections: connection.ShapeConnection[];
+        IsFixed: boolean;
         constructor(id: string, type: constants.ShapeType, width: any, height: any, htmlText: string, cssClassPrefix: string);
         GetContainingElements(): any[];
         BeforeMove(x: number, y: number): void;
@@ -233,6 +234,11 @@ declare module flowchart {
          * @param classNamespace Namespace to the new connection-drawer-class. f.e. "flowchart.connection.drawer.Curved"
          */
         RegisterConnectionDrawer(enumValue: number, classNamespace: string): void;
+        /**
+     * set the shape at a fixed position or moveable.
+     * @param isFixed
+     */
+        SetFixed(shape: shape.ShapeBase, isFixed: boolean): void;
         private CheckShapeHasRaphaelElement(shape);
     }
 }
@@ -663,6 +669,7 @@ declare module flowchart {
         DragConnection: connection.RaphaelConnection;
         CurrentOverShape: shape.ShapeBase;
         constructor(_connector: ShapeConnector, paper: RaphaelPaper, options: FlowChartOptions, eventHandler: EventHandler);
+        FixShape(shape: shape.ShapeBase, isFixed: boolean): void;
         /**
          * registers an shape to be draggable
          * @param shape
