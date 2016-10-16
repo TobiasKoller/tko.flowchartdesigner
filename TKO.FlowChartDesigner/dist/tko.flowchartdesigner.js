@@ -52,6 +52,7 @@ var flowchart;
                 _super.call(this);
                 this.ConnectionPoints = [];
                 this.Connections = [];
+                this.IsFixed = false;
                 this.Id = id;
                 this.Type = type;
                 this.Width = width;
@@ -191,6 +192,9 @@ var flowchart;
             };
             ShapeBase.prototype.SetCssContentClass = function (className) {
                 this.CssContentClass = className;
+            };
+            ShapeBase.prototype.SetCssBackgroundClass = function (className) {
+                this.CssBackgroundClass = className;
             };
             ShapeBase.prototype.GetPosition = function () {
                 return new flowchart.model.ShapePosition(this.RaphaelElement.attr("x"), this.RaphaelElement.attr("y"));
@@ -616,6 +620,13 @@ var flowchart;
         FlowChart.prototype.RegisterConnectionDrawer = function (enumValue, classNamespace) {
             this.namespaceRegistrator.RegisterConnectionDrawer(enumValue, classNamespace);
         };
+        /**
+     * set the shape at a fixed position or moveable.
+     * @param isFixed
+     */
+        FlowChart.prototype.SetFixed = function (shape, isFixed) {
+            this.mover.FixShape(shape, isFixed);
+        };
         FlowChart.prototype.CheckShapeHasRaphaelElement = function (shape) {
             if (!shape)
                 throw "Parameter shape is null";
@@ -691,66 +702,198 @@ var common;
 })(common || (common = {}));
 var flowchart;
 (function (flowchart) {
-    var FlowChartColors = (function () {
-        function FlowChartColors() {
-            //Shape
-            this.ShapeSelected = "blue";
-            //Connection
-            this.ConnectionSelected = "blue";
-            //connectionpoints
-            this.ConnectionPointIncoming = "white";
-            this.ConnectionPointTrueSuccess = "green";
-            this.ConnectionPointFalseError = "red";
-        }
-        return FlowChartColors;
-    }());
-    flowchart.FlowChartColors = FlowChartColors;
+    var connection;
+    (function (connection) {
+        var drawer;
+        (function (drawer) {
+            var Curved = (function () {
+                function Curved(paper) {
+                    this.paper = paper;
+                }
+                Curved.prototype.Draw = function (raphaelObjectFrom, raphaelObjectTo, innerColor, outerColor, thickness, existingConnection) {
+                    if (thickness === void 0) { thickness = 3; }
+                    if (existingConnection === void 0) { existingConnection = null; }
+                    var bb1 = raphaelObjectFrom.getBBox(), bb2 = raphaelObjectTo.getBBox(), p = [
+                        { x: bb1.x + bb1.width / 2, y: bb1.y - 1 },
+                        { x: bb1.x + bb1.width / 2, y: bb1.y + bb1.height + 1 },
+                        { x: bb1.x - 1, y: bb1.y + bb1.height / 2 },
+                        { x: bb1.x + bb1.width + 1, y: bb1.y + bb1.height / 2 },
+                        { x: bb2.x + bb2.width / 2, y: bb2.y - 1 },
+                        { x: bb2.x + bb2.width / 2, y: bb2.y + bb2.height + 1 },
+                        { x: bb2.x - 1, y: bb2.y + bb2.height / 2 },
+                        { x: bb2.x + bb2.width + 1, y: bb2.y + bb2.height / 2 }
+                    ], d = {}, dis = [];
+                    for (var i = 0; i < 4; i++) {
+                        for (var j = 4; j < 8; j++) {
+                            var dx = Math.abs(p[i].x - p[j].x), dy = Math.abs(p[i].y - p[j].y);
+                            if ((i == j - 4) || (((i != 3 && j != 6) || p[i].x < p[j].x) && ((i != 2 && j != 7) || p[i].x > p[j].x) && ((i != 0 && j != 5) || p[i].y > p[j].y) && ((i != 1 && j != 4) || p[i].y < p[j].y))) {
+                                dis.push(dx + dy);
+                                d[dis[dis.length - 1]] = [i, j];
+                            }
+                        }
+                    }
+                    if (dis.length == 0) {
+                        var res = [0, 4];
+                    }
+                    else {
+                        res = d[Math.min.apply(Math, dis)];
+                    }
+                    var x1 = p[res[0]].x, y1 = p[res[0]].y, x4 = p[res[1]].x, y4 = p[res[1]].y;
+                    dx = Math.max(Math.abs(x1 - x4) / 2, 10);
+                    dy = Math.max(Math.abs(y1 - y4) / 2, 10);
+                    var x2 = [x1, x1, x1 - dx, x1 + dx][res[0]].toFixed(3), y2 = [y1 - dy, y1 + dy, y1, y1][res[0]].toFixed(3), x3 = [0, 0, 0, 0, x4, x4, x4 - dx, x4 + dx][res[1]].toFixed(3), y3 = [0, 0, 0, 0, y1 + dy, y1 - dy, y4, y4][res[1]].toFixed(3);
+                    var path = ["M", x1.toFixed(3), y1.toFixed(3), "C", x2, y2, x3, y3, x4.toFixed(3), y4.toFixed(3)].join(",");
+                    if (existingConnection) {
+                        existingConnection.InnerLine.attr("stroke", innerColor);
+                        existingConnection.OuterLine.attr({ "stroke": outerColor, "stroke-width": thickness });
+                        existingConnection.InnerLine.attr("path", path);
+                        existingConnection.OuterLine.attr("path", path);
+                        return existingConnection;
+                    }
+                    else {
+                        return new connection.RaphaelConnection(this.paper, path, innerColor, outerColor, thickness, raphaelObjectFrom, raphaelObjectTo);
+                    }
+                };
+                return Curved;
+            }());
+            drawer.Curved = Curved;
+        })(drawer = connection.drawer || (connection.drawer = {}));
+    })(connection = flowchart.connection || (flowchart.connection = {}));
 })(flowchart || (flowchart = {}));
 var flowchart;
 (function (flowchart) {
-    var ModelLoader = (function () {
-        function ModelLoader(flowChart, namespaceRegistrator) {
-            this.flowChart = flowChart;
-            this.namespaceRegistrator = namespaceRegistrator;
-        }
-        ModelLoader.prototype.Load = function (exportModel) {
-            this.flowChart.Clear();
-            this.AddShapes(exportModel.Shapes);
-            this.ConnectShapes(exportModel.Connections);
-        };
-        ModelLoader.prototype.AddShapes = function (shapeList) {
-            var exportShape;
-            for (var _i = 0, shapeList_1 = shapeList; _i < shapeList_1.length; _i++) {
-                exportShape = shapeList_1[_i];
-                var metadata = new flowchart.shape.metadata.Html("");
-                var dec = common.DomHelper.DecodeHtmlEntity(exportShape.Metadata);
-                metadata.SetHtmlText(dec);
-                var classNamespace = this.namespaceRegistrator.GetShape(exportShape.Type);
-                var shapeInstance = new classNamespace(exportShape.Id, exportShape.Width, exportShape.Height, metadata);
-                //connection points
-                var connectionPoints = [];
-                var cp;
-                for (var _a = 0, _b = exportShape.ConnectionPoints; _a < _b.length; _a++) {
-                    cp = _b[_a];
-                    connectionPoints.push(new flowchart.shape.ConnectionPoint(cp.Type, cp.Pos));
+    var connection;
+    (function (connection) {
+        var drawer;
+        (function (drawer) {
+            var Elbow = (function () {
+                function Elbow() {
                 }
-                shapeInstance.AddConnectionPoints(connectionPoints);
-                this.flowChart.AddShape(shapeInstance, exportShape.PosX, exportShape.PosY);
+                Elbow.prototype.Draw = function (raphaelObjectFrom, raphaelObjectTo, innerColor, outerColor, thickness, existingConnection) {
+                    if (thickness === void 0) { thickness = 3; }
+                    if (existingConnection === void 0) { existingConnection = null; }
+                    {
+                        throw "ElbowConnection: not implemented yet.";
+                    }
+                };
+                return Elbow;
+            }());
+            drawer.Elbow = Elbow;
+        })(drawer = connection.drawer || (connection.drawer = {}));
+    })(connection = flowchart.connection || (flowchart.connection = {}));
+})(flowchart || (flowchart = {}));
+var flowchart;
+(function (flowchart) {
+    var connection;
+    (function (connection) {
+        var drawer;
+        (function (drawer) {
+            var Straight = (function () {
+                function Straight(paper) {
+                    this.paper = paper;
+                }
+                Straight.prototype.Draw = function (raphaelObjectFrom, raphaelObjectTo, innerColor, outerColor, thickness, existingConnection) {
+                    if (thickness === void 0) { thickness = 3; }
+                    if (existingConnection === void 0) { existingConnection = null; }
+                    {
+                        var bb1 = raphaelObjectFrom.getBBox(), bb2 = raphaelObjectTo.getBBox();
+                        var x1 = bb1.x + bb1.width / 2;
+                        var y1 = bb1.y + bb1.height / 2;
+                        var x2 = bb2.x + bb2.width / 2;
+                        var y2 = bb2.y + bb2.height / 2;
+                        var path = ["M", x1, y1, x2, y2].join(",");
+                        if (existingConnection) {
+                            existingConnection.InnerLine.attr({ "stroke": innerColor, cursor: "pointer" });
+                            existingConnection.OuterLine.attr({ "stroke": outerColor, "stroke-width": thickness, cursor: "pointer" });
+                            existingConnection.InnerLine.attr("path", path);
+                            existingConnection.OuterLine.attr("path", path);
+                            return existingConnection;
+                        }
+                        else {
+                            return new connection.RaphaelConnection(this.paper, path, innerColor, outerColor, thickness, raphaelObjectFrom, raphaelObjectTo);
+                        }
+                    }
+                };
+                return Straight;
+            }());
+            drawer.Straight = Straight;
+        })(drawer = connection.drawer || (connection.drawer = {}));
+    })(connection = flowchart.connection || (flowchart.connection = {}));
+})(flowchart || (flowchart = {}));
+var flowchart;
+(function (flowchart) {
+    var connection;
+    (function (connection) {
+        var RaphaelConnection = (function () {
+            //this.paper, path, innerColor, outerColor, thickness, obj1, obj2
+            function RaphaelConnection(ref, path, innerColor, outerColor, thickness, shapeFrom, shapeTo) {
+                this.ref = ref;
+                this.InnerColor = innerColor;
+                this.OuterColor = outerColor;
+                this.Thickness = thickness;
+                this.ShapeFrom = shapeFrom;
+                this.ShapeTo = shapeTo;
+                this.OuterLine = ref.path(path);
+                this.OuterLine.attr({ stroke: outerColor, fill: "none", "stroke-width": thickness, cursor: "pointer" });
+                this.InnerLine = ref.path(path);
+                this.InnerLine.attr({ stroke: innerColor, fill: "none", cursor: "pointer" });
             }
-        };
-        ModelLoader.prototype.ConnectShapes = function (connections) {
-            var c;
-            //wc.ConnectShapes(s1, s2, cPos.Bottom, cPos.Left);
-            for (var _i = 0, connections_1 = connections; _i < connections_1.length; _i++) {
-                c = connections_1[_i];
-                var shapeFrom = this.flowChart.GetShape(c.ShapeFromId);
-                var shapeTo = this.flowChart.GetShape(c.ShapeToId);
-                this.flowChart.ConnectShapes(shapeFrom, shapeTo, c.ConnectionPointFromPos, c.ConnectionPointToPos);
+            RaphaelConnection.prototype.RemoveFromPaper = function () {
+                this.InnerLine.remove();
+                this.OuterLine.remove();
+            };
+            return RaphaelConnection;
+        }());
+        connection.RaphaelConnection = RaphaelConnection;
+    })(connection = flowchart.connection || (flowchart.connection = {}));
+})(flowchart || (flowchart = {}));
+var flowchart;
+(function (flowchart) {
+    var connection;
+    (function (connection) {
+        var ShapeConnection = (function (_super) {
+            __extends(ShapeConnection, _super);
+            function ShapeConnection(id, shapeFrom, shapeTo, type, posFrom, posTo, raphaelConnection) {
+                _super.call(this);
+                this.Id = id;
+                this.ShapeFrom = shapeFrom;
+                this.ShapeTo = shapeTo;
+                this.Type = type;
+                this.ConnectionPointFrom = posFrom;
+                this.ConnectionPointTo = posTo;
+                this.RaphaelConnection = raphaelConnection;
             }
-        };
-        return ModelLoader;
-    }());
-    flowchart.ModelLoader = ModelLoader;
+            ShapeConnection.prototype.OnSelect = function (options) {
+                this.RaphaelConnection.InnerLine.data("origStroke", this.RaphaelConnection.InnerLine.attr("stroke"));
+                this.RaphaelConnection.OuterLine.data("origStroke", this.RaphaelConnection.OuterLine.attr("stroke"));
+                this.RaphaelConnection.InnerLine.attr("stroke", options.Colors.ConnectionSelected);
+                this.RaphaelConnection.OuterLine.attr("stroke", options.Colors.ConnectionSelected);
+            };
+            ShapeConnection.prototype.OnUnselect = function (options) {
+                var innerLineColor = this.RaphaelConnection.InnerLine.data("origStroke");
+                var outerLineColor = this.RaphaelConnection.OuterLine.data("origStroke");
+                this.RaphaelConnection.InnerLine.attr("stroke", innerLineColor);
+                this.RaphaelConnection.OuterLine.attr("stroke", outerLineColor);
+            };
+            ShapeConnection.prototype.Delete = function () {
+                this.RaphaelConnection.RemoveFromPaper();
+            };
+            return ShapeConnection;
+        }(flowchart.model.SelectableElement));
+        connection.ShapeConnection = ShapeConnection;
+    })(connection = flowchart.connection || (flowchart.connection = {}));
+})(flowchart || (flowchart = {}));
+var flowchart;
+(function (flowchart) {
+    var constants;
+    (function (constants) {
+        (function (ConnectionDrawerType) {
+            ConnectionDrawerType[ConnectionDrawerType["Curved"] = 0] = "Curved";
+            ConnectionDrawerType[ConnectionDrawerType["Straight"] = 1] = "Straight";
+            ConnectionDrawerType[ConnectionDrawerType["Elbow"] = 2] = "Elbow";
+        })(constants.ConnectionDrawerType || (constants.ConnectionDrawerType = {}));
+        var ConnectionDrawerType = constants.ConnectionDrawerType;
+    })(constants = flowchart.constants || (flowchart.constants = {}));
 })(flowchart || (flowchart = {}));
 var flowchart;
 (function (flowchart) {
@@ -816,15 +959,102 @@ var flowchart;
 })(flowchart || (flowchart = {}));
 var flowchart;
 (function (flowchart) {
-    var constants;
-    (function (constants) {
-        (function (ConnectionDrawerType) {
-            ConnectionDrawerType[ConnectionDrawerType["Curved"] = 0] = "Curved";
-            ConnectionDrawerType[ConnectionDrawerType["Straight"] = 1] = "Straight";
-            ConnectionDrawerType[ConnectionDrawerType["Elbow"] = 2] = "Elbow";
-        })(constants.ConnectionDrawerType || (constants.ConnectionDrawerType = {}));
-        var ConnectionDrawerType = constants.ConnectionDrawerType;
-    })(constants = flowchart.constants || (flowchart.constants = {}));
+    var EventHandler = (function () {
+        function EventHandler() {
+            this.listener = [];
+        }
+        /**
+         * register event
+         * @param type
+         * @param callback
+         * @param id
+         */
+        EventHandler.prototype.Register = function (type, callback, id) {
+            if (id === void 0) { id = ""; }
+            var eventListener = new flowchart.model.EventListener(type, callback, id);
+            this.listener.push(eventListener);
+        };
+        /**
+         * unregister event
+         * @param id
+         */
+        EventHandler.prototype.Unregister = function (id) {
+            if (!id || id == "")
+                return;
+            var e;
+            var len = this.listener.length;
+            for (var i = len - 1; i >= 0; i--) {
+                e = this.listener[i];
+                if (e.Id == id)
+                    this.listener.splice(i);
+            }
+        };
+        /**
+         * Notifies all event-listener
+         * @param type
+         * @param eventArgs
+         */
+        EventHandler.prototype.Notify = function (type, eventArgs) {
+            var c;
+            var result = true;
+            for (var _i = 0, _a = this.listener; _i < _a.length; _i++) {
+                c = _a[_i];
+                if (c.Type == type) {
+                    var tmpResult = c.Callback(eventArgs);
+                    if (tmpResult == false)
+                        result = false;
+                }
+            }
+            return result;
+        };
+        return EventHandler;
+    }());
+    flowchart.EventHandler = EventHandler;
+})(flowchart || (flowchart = {}));
+var flowchart;
+(function (flowchart) {
+    var FlowChartColors = (function () {
+        function FlowChartColors() {
+            //Shape
+            this.ShapeSelected = "blue";
+            //Connection
+            this.ConnectionSelected = "blue";
+            //connectionpoints
+            this.ConnectionPointIncoming = "white";
+            this.ConnectionPointTrueSuccess = "green";
+            this.ConnectionPointFalseError = "red";
+        }
+        return FlowChartColors;
+    }());
+    flowchart.FlowChartColors = FlowChartColors;
+})(flowchart || (flowchart = {}));
+var flowchart;
+(function (flowchart) {
+    var FlowChartOptions = (function () {
+        function FlowChartOptions(shapeConnectionType) {
+            if (shapeConnectionType === void 0) { shapeConnectionType = flowchart.constants.ConnectionDrawerType.Curved; }
+            this.IsInitialized = false;
+            this.EnableEvents = true;
+            this.ShapeConnectionType = shapeConnectionType;
+            this.Colors = new flowchart.FlowChartColors();
+        }
+        FlowChartOptions.prototype.Init = function (paper) {
+            if (this.IsInitialized)
+                return;
+            switch (this.ShapeConnectionType) {
+                case flowchart.constants.ConnectionDrawerType.Curved:
+                    this.ShapeConnection = new flowchart.connection.drawer.Curved(paper);
+                    break;
+                case flowchart.constants.ConnectionDrawerType.Straight:
+                    this.ShapeConnection = new flowchart.connection.drawer.Straight(paper);
+                    break;
+                default:
+            }
+            this.IsInitialized = true;
+        };
+        return FlowChartOptions;
+    }());
+    flowchart.FlowChartOptions = FlowChartOptions;
 })(flowchart || (flowchart = {}));
 var flowchart;
 (function (flowchart) {
@@ -881,33 +1111,6 @@ var flowchart;
         }());
         model.EventParamShape = EventParamShape;
     })(model = flowchart.model || (flowchart.model = {}));
-})(flowchart || (flowchart = {}));
-var flowchart;
-(function (flowchart) {
-    var connection;
-    (function (connection) {
-        var RaphaelConnection = (function () {
-            //this.paper, path, innerColor, outerColor, thickness, obj1, obj2
-            function RaphaelConnection(ref, path, innerColor, outerColor, thickness, shapeFrom, shapeTo) {
-                this.ref = ref;
-                this.InnerColor = innerColor;
-                this.OuterColor = outerColor;
-                this.Thickness = thickness;
-                this.ShapeFrom = shapeFrom;
-                this.ShapeTo = shapeTo;
-                this.OuterLine = ref.path(path);
-                this.OuterLine.attr({ stroke: outerColor, fill: "none", "stroke-width": thickness, cursor: "pointer" });
-                this.InnerLine = ref.path(path);
-                this.InnerLine.attr({ stroke: innerColor, fill: "none", cursor: "pointer" });
-            }
-            RaphaelConnection.prototype.RemoveFromPaper = function () {
-                this.InnerLine.remove();
-                this.OuterLine.remove();
-            };
-            return RaphaelConnection;
-        }());
-        connection.RaphaelConnection = RaphaelConnection;
-    })(connection = flowchart.connection || (flowchart.connection = {}));
 })(flowchart || (flowchart = {}));
 var flowchart;
 (function (flowchart) {
@@ -1114,124 +1317,6 @@ var flowchart;
 })(flowchart || (flowchart = {}));
 var flowchart;
 (function (flowchart) {
-    var connection;
-    (function (connection) {
-        var ShapeConnection = (function (_super) {
-            __extends(ShapeConnection, _super);
-            function ShapeConnection(id, shapeFrom, shapeTo, type, posFrom, posTo, raphaelConnection) {
-                _super.call(this);
-                this.Id = id;
-                this.ShapeFrom = shapeFrom;
-                this.ShapeTo = shapeTo;
-                this.Type = type;
-                this.ConnectionPointFrom = posFrom;
-                this.ConnectionPointTo = posTo;
-                this.RaphaelConnection = raphaelConnection;
-            }
-            ShapeConnection.prototype.OnSelect = function (options) {
-                this.RaphaelConnection.InnerLine.data("origStroke", this.RaphaelConnection.InnerLine.attr("stroke"));
-                this.RaphaelConnection.OuterLine.data("origStroke", this.RaphaelConnection.OuterLine.attr("stroke"));
-                this.RaphaelConnection.InnerLine.attr("stroke", options.Colors.ConnectionSelected);
-                this.RaphaelConnection.OuterLine.attr("stroke", options.Colors.ConnectionSelected);
-            };
-            ShapeConnection.prototype.OnUnselect = function (options) {
-                var innerLineColor = this.RaphaelConnection.InnerLine.data("origStroke");
-                var outerLineColor = this.RaphaelConnection.OuterLine.data("origStroke");
-                this.RaphaelConnection.InnerLine.attr("stroke", innerLineColor);
-                this.RaphaelConnection.OuterLine.attr("stroke", outerLineColor);
-            };
-            ShapeConnection.prototype.Delete = function () {
-                this.RaphaelConnection.RemoveFromPaper();
-            };
-            return ShapeConnection;
-        }(flowchart.model.SelectableElement));
-        connection.ShapeConnection = ShapeConnection;
-    })(connection = flowchart.connection || (flowchart.connection = {}));
-})(flowchart || (flowchart = {}));
-var flowchart;
-(function (flowchart) {
-    var EventHandler = (function () {
-        function EventHandler() {
-            this.listener = [];
-        }
-        /**
-         * register event
-         * @param type
-         * @param callback
-         * @param id
-         */
-        EventHandler.prototype.Register = function (type, callback, id) {
-            if (id === void 0) { id = ""; }
-            var eventListener = new flowchart.model.EventListener(type, callback, id);
-            this.listener.push(eventListener);
-        };
-        /**
-         * unregister event
-         * @param id
-         */
-        EventHandler.prototype.Unregister = function (id) {
-            if (!id || id == "")
-                return;
-            var e;
-            var len = this.listener.length;
-            for (var i = len - 1; i >= 0; i--) {
-                e = this.listener[i];
-                if (e.Id == id)
-                    this.listener.splice(i);
-            }
-        };
-        /**
-         * Notifies all event-listener
-         * @param type
-         * @param eventArgs
-         */
-        EventHandler.prototype.Notify = function (type, eventArgs) {
-            var c;
-            var result = true;
-            for (var _i = 0, _a = this.listener; _i < _a.length; _i++) {
-                c = _a[_i];
-                if (c.Type == type) {
-                    var tmpResult = c.Callback(eventArgs);
-                    if (tmpResult == false)
-                        result = false;
-                }
-            }
-            return result;
-        };
-        return EventHandler;
-    }());
-    flowchart.EventHandler = EventHandler;
-})(flowchart || (flowchart = {}));
-var flowchart;
-(function (flowchart) {
-    var FlowChartOptions = (function () {
-        function FlowChartOptions(shapeConnectionType) {
-            if (shapeConnectionType === void 0) { shapeConnectionType = flowchart.constants.ConnectionDrawerType.Curved; }
-            this.IsInitialized = false;
-            this.EnableEvents = true;
-            this.ShapeConnectionType = shapeConnectionType;
-            this.Colors = new flowchart.FlowChartColors();
-        }
-        FlowChartOptions.prototype.Init = function (paper) {
-            if (this.IsInitialized)
-                return;
-            switch (this.ShapeConnectionType) {
-                case flowchart.constants.ConnectionDrawerType.Curved:
-                    this.ShapeConnection = new flowchart.connection.drawer.Curved(paper);
-                    break;
-                case flowchart.constants.ConnectionDrawerType.Straight:
-                    this.ShapeConnection = new flowchart.connection.drawer.Straight(paper);
-                    break;
-                default:
-            }
-            this.IsInitialized = true;
-        };
-        return FlowChartOptions;
-    }());
-    flowchart.FlowChartOptions = FlowChartOptions;
-})(flowchart || (flowchart = {}));
-var flowchart;
-(function (flowchart) {
     var model;
     (function (model) {
         var ShapePosition = (function () {
@@ -1243,6 +1328,52 @@ var flowchart;
         }());
         model.ShapePosition = ShapePosition;
     })(model = flowchart.model || (flowchart.model = {}));
+})(flowchart || (flowchart = {}));
+var flowchart;
+(function (flowchart) {
+    var ModelLoader = (function () {
+        function ModelLoader(flowChart, namespaceRegistrator) {
+            this.flowChart = flowChart;
+            this.namespaceRegistrator = namespaceRegistrator;
+        }
+        ModelLoader.prototype.Load = function (exportModel) {
+            this.flowChart.Clear();
+            this.AddShapes(exportModel.Shapes);
+            this.ConnectShapes(exportModel.Connections);
+        };
+        ModelLoader.prototype.AddShapes = function (shapeList) {
+            var exportShape;
+            for (var _i = 0, shapeList_1 = shapeList; _i < shapeList_1.length; _i++) {
+                exportShape = shapeList_1[_i];
+                var metadata = new flowchart.shape.metadata.Html("");
+                var dec = common.DomHelper.DecodeHtmlEntity(exportShape.Metadata);
+                metadata.SetHtmlText(dec);
+                var classNamespace = this.namespaceRegistrator.GetShape(exportShape.Type);
+                var shapeInstance = new classNamespace(exportShape.Id, exportShape.Width, exportShape.Height, metadata);
+                //connection points
+                var connectionPoints = [];
+                var cp;
+                for (var _a = 0, _b = exportShape.ConnectionPoints; _a < _b.length; _a++) {
+                    cp = _b[_a];
+                    connectionPoints.push(new flowchart.shape.ConnectionPoint(cp.Type, cp.Pos));
+                }
+                shapeInstance.AddConnectionPoints(connectionPoints);
+                this.flowChart.AddShape(shapeInstance, exportShape.PosX, exportShape.PosY);
+            }
+        };
+        ModelLoader.prototype.ConnectShapes = function (connections) {
+            var c;
+            //wc.ConnectShapes(s1, s2, cPos.Bottom, cPos.Left);
+            for (var _i = 0, connections_1 = connections; _i < connections_1.length; _i++) {
+                c = connections_1[_i];
+                var shapeFrom = this.flowChart.GetShape(c.ShapeFromId);
+                var shapeTo = this.flowChart.GetShape(c.ShapeToId);
+                this.flowChart.ConnectShapes(shapeFrom, shapeTo, c.ConnectionPointFromPos, c.ConnectionPointToPos);
+            }
+        };
+        return ModelLoader;
+    }());
+    flowchart.ModelLoader = ModelLoader;
 })(flowchart || (flowchart = {}));
 var flowchart;
 (function (flowchart) {
@@ -1345,7 +1476,7 @@ var flowchart;
                 _this.IsCtrl = event.keyCode === 17; //17=ctrl
                 if (event.keyCode == 46) {
                     if (_this.SelectedElements.length === 0)
-                        return false;
+                        return true; //return true because maybe another part outside this library is using this event.
                     var shapes = [];
                     var connections = [];
                     //iterate through all selected elements and throw the before and after events.
@@ -1375,7 +1506,7 @@ var flowchart;
                         }
                     }
                     if (_this.eventHandler.Notify(flowchart.constants.EventType.BeforeDelete, new flowchart.model.EventParamDeleteList(shapes, connections)) === false)
-                        return false;
+                        return true; //return true because maybe another part outside this library is using this event.
                     //delete elements
                     _this.DeleteElements();
                     _this.eventHandler.Notify(flowchart.constants.EventType.AfterDelete, new flowchart.model.EventParamDeleteList(shapes, connections));
@@ -1488,123 +1619,127 @@ var flowchart;
 })(flowchart || (flowchart = {}));
 var flowchart;
 (function (flowchart) {
-    var connection;
-    (function (connection) {
-        var drawer;
-        (function (drawer) {
-            var Elbow = (function () {
-                function Elbow() {
+    var shape;
+    (function (shape) {
+        var ConnectionPoint = (function (_super) {
+            __extends(ConnectionPoint, _super);
+            function ConnectionPoint(type, position, width, height) {
+                if (width === void 0) { width = 30; }
+                if (height === void 0) { height = 30; }
+                _super.call(this, "", flowchart.constants.ShapeType.ConnectionPoint, width, height, null, "");
+                this.PointType = type;
+                this.Position = position;
+            }
+            ConnectionPoint.prototype.DrawShape = function (paper, posX, posY) {
+                var p = this.ParentShape.RaphaelElement;
+                var parentBbox = p.getBBox();
+                var x = 0, y = 0;
+                var pointWidth = 5;
+                var pointHeight = 5;
+                var positions = this.ParentShape.CalculateConnectionPointCoord(this.Position, pointWidth, pointHeight);
+                x = positions.x;
+                y = positions.y;
+                if (x === 0) {
+                    x = parentBbox.x;
+                    y = parentBbox.y;
                 }
-                Elbow.prototype.Draw = function (raphaelObjectFrom, raphaelObjectTo, innerColor, outerColor, thickness, existingConnection) {
-                    if (thickness === void 0) { thickness = 3; }
-                    if (existingConnection === void 0) { existingConnection = null; }
-                    {
-                        throw "ElbowConnection: not implemented yet.";
-                    }
-                };
-                return Elbow;
-            }());
-            drawer.Elbow = Elbow;
-        })(drawer = connection.drawer || (connection.drawer = {}));
-    })(connection = flowchart.connection || (flowchart.connection = {}));
+                ////this.RaphaelElement = this.Paper.rect(x, y, pointWidth, pointHeight);
+                var element = paper.circle(x, y, pointWidth);
+                element.data("shape", this);
+                //var cssClass = common.DomHelper.GetCssClass(this.CssBackgroundClass);
+                //if (cssClass)
+                //    element.attr({ fill: cssClass.style["background-color"] });
+                if (this.PointType != flowchart.constants.ConnectionPointType.Incoming) {
+                    //add cursor:pointer because these points are draggable
+                    element.attr({ cursor: "crosshair" });
+                }
+                return element;
+            };
+            ConnectionPoint.prototype.GetPosition = function () {
+                return new flowchart.model.ShapePosition(this.RaphaelElement.attr("cx"), this.RaphaelElement.attr("cy"));
+                //return { x: this.RaphaelElement.attr("cx"), y: this.RaphaelElement.attr("cy") };
+            };
+            ConnectionPoint.prototype.SetPosition = function (posX, posY) {
+                this.RaphaelElement.attr({ cx: posX, cy: posY });
+            };
+            ConnectionPoint.prototype.GetMetadataDiv = function () {
+                return null;
+            };
+            ConnectionPoint.prototype.CreateCopy = function () {
+                //var parentShape = this.RaphaelElement.data("shape");
+                var connectionPoint = new ConnectionPoint(this.PointType, this.Position, this.Width, this.Height);
+                connectionPoint.RaphaelElement = this.RaphaelElement.clone();
+                return connectionPoint;
+            };
+            ConnectionPoint.prototype.OnSelect = function () {
+            };
+            ConnectionPoint.prototype.OnUnselect = function () {
+            };
+            return ConnectionPoint;
+        }(shape.ShapeBase));
+        shape.ConnectionPoint = ConnectionPoint;
+    })(shape = flowchart.shape || (flowchart.shape = {}));
 })(flowchart || (flowchart = {}));
 var flowchart;
 (function (flowchart) {
-    var connection;
-    (function (connection) {
-        var drawer;
-        (function (drawer) {
-            var Curved = (function () {
-                function Curved(paper) {
-                    this.paper = paper;
+    var shape;
+    (function (shape) {
+        var metadata;
+        (function (metadata) {
+            var Html = (function () {
+                function Html(htmlText) {
+                    var htmlElement = document.createElement("div");
+                    htmlElement.style.width = "100%";
+                    htmlElement.style.height = "100%";
+                    //"   <div>" + this.Label + "</div>";
+                    this.Html = htmlElement;
+                    this.SetHtmlText(htmlText);
                 }
-                Curved.prototype.Draw = function (raphaelObjectFrom, raphaelObjectTo, innerColor, outerColor, thickness, existingConnection) {
-                    if (thickness === void 0) { thickness = 3; }
-                    if (existingConnection === void 0) { existingConnection = null; }
-                    var bb1 = raphaelObjectFrom.getBBox(), bb2 = raphaelObjectTo.getBBox(), p = [
-                        { x: bb1.x + bb1.width / 2, y: bb1.y - 1 },
-                        { x: bb1.x + bb1.width / 2, y: bb1.y + bb1.height + 1 },
-                        { x: bb1.x - 1, y: bb1.y + bb1.height / 2 },
-                        { x: bb1.x + bb1.width + 1, y: bb1.y + bb1.height / 2 },
-                        { x: bb2.x + bb2.width / 2, y: bb2.y - 1 },
-                        { x: bb2.x + bb2.width / 2, y: bb2.y + bb2.height + 1 },
-                        { x: bb2.x - 1, y: bb2.y + bb2.height / 2 },
-                        { x: bb2.x + bb2.width + 1, y: bb2.y + bb2.height / 2 }
-                    ], d = {}, dis = [];
-                    for (var i = 0; i < 4; i++) {
-                        for (var j = 4; j < 8; j++) {
-                            var dx = Math.abs(p[i].x - p[j].x), dy = Math.abs(p[i].y - p[j].y);
-                            if ((i == j - 4) || (((i != 3 && j != 6) || p[i].x < p[j].x) && ((i != 2 && j != 7) || p[i].x > p[j].x) && ((i != 0 && j != 5) || p[i].y > p[j].y) && ((i != 1 && j != 4) || p[i].y < p[j].y))) {
-                                dis.push(dx + dy);
-                                d[dis[dis.length - 1]] = [i, j];
-                            }
-                        }
-                    }
-                    if (dis.length == 0) {
-                        var res = [0, 4];
-                    }
-                    else {
-                        res = d[Math.min.apply(Math, dis)];
-                    }
-                    var x1 = p[res[0]].x, y1 = p[res[0]].y, x4 = p[res[1]].x, y4 = p[res[1]].y;
-                    dx = Math.max(Math.abs(x1 - x4) / 2, 10);
-                    dy = Math.max(Math.abs(y1 - y4) / 2, 10);
-                    var x2 = [x1, x1, x1 - dx, x1 + dx][res[0]].toFixed(3), y2 = [y1 - dy, y1 + dy, y1, y1][res[0]].toFixed(3), x3 = [0, 0, 0, 0, x4, x4, x4 - dx, x4 + dx][res[1]].toFixed(3), y3 = [0, 0, 0, 0, y1 + dy, y1 - dy, y4, y4][res[1]].toFixed(3);
-                    var path = ["M", x1.toFixed(3), y1.toFixed(3), "C", x2, y2, x3, y3, x4.toFixed(3), y4.toFixed(3)].join(",");
-                    if (existingConnection) {
-                        existingConnection.InnerLine.attr("stroke", innerColor);
-                        existingConnection.OuterLine.attr({ "stroke": outerColor, "stroke-width": thickness });
-                        existingConnection.InnerLine.attr("path", path);
-                        existingConnection.OuterLine.attr("path", path);
-                        return existingConnection;
-                    }
-                    else {
-                        return new connection.RaphaelConnection(this.paper, path, innerColor, outerColor, thickness, raphaelObjectFrom, raphaelObjectTo);
-                    }
+                /**
+                 * Set the containing HTML
+                 * @param htmlElement
+                 */
+                Html.prototype.SetHtml = function (htmlElement) {
+                    this.Html = htmlElement;
                 };
-                return Curved;
+                /**
+                 * Set the containing HTML with string
+                 * @param innerHtml
+                 */
+                Html.prototype.SetHtmlText = function (innerHtml) {
+                    this.Html.innerHTML = innerHtml;
+                };
+                /**
+                 * returns the metadata as HTMLElement
+                 */
+                Html.prototype.GetHtml = function () {
+                    return this.Html;
+                };
+                return Html;
             }());
-            drawer.Curved = Curved;
-        })(drawer = connection.drawer || (connection.drawer = {}));
-    })(connection = flowchart.connection || (flowchart.connection = {}));
+            metadata.Html = Html;
+        })(metadata = shape.metadata || (shape.metadata = {}));
+    })(shape = flowchart.shape || (flowchart.shape = {}));
 })(flowchart || (flowchart = {}));
 var flowchart;
 (function (flowchart) {
-    var connection;
-    (function (connection) {
-        var drawer;
-        (function (drawer) {
-            var Straight = (function () {
-                function Straight(paper) {
-                    this.paper = paper;
-                }
-                Straight.prototype.Draw = function (raphaelObjectFrom, raphaelObjectTo, innerColor, outerColor, thickness, existingConnection) {
-                    if (thickness === void 0) { thickness = 3; }
-                    if (existingConnection === void 0) { existingConnection = null; }
-                    {
-                        var bb1 = raphaelObjectFrom.getBBox(), bb2 = raphaelObjectTo.getBBox();
-                        var x1 = bb1.x + bb1.width / 2;
-                        var y1 = bb1.y + bb1.height / 2;
-                        var x2 = bb2.x + bb2.width / 2;
-                        var y2 = bb2.y + bb2.height / 2;
-                        var path = ["M", x1, y1, x2, y2].join(",");
-                        if (existingConnection) {
-                            existingConnection.InnerLine.attr({ "stroke": innerColor, cursor: "pointer" });
-                            existingConnection.OuterLine.attr({ "stroke": outerColor, "stroke-width": thickness, cursor: "pointer" });
-                            existingConnection.InnerLine.attr("path", path);
-                            existingConnection.OuterLine.attr("path", path);
-                            return existingConnection;
-                        }
-                        else {
-                            return new connection.RaphaelConnection(this.paper, path, innerColor, outerColor, thickness, raphaelObjectFrom, raphaelObjectTo);
-                        }
-                    }
-                };
-                return Straight;
-            }());
-            drawer.Straight = Straight;
-        })(drawer = connection.drawer || (connection.drawer = {}));
-    })(connection = flowchart.connection || (flowchart.connection = {}));
+    var shape;
+    (function (shape) {
+        var Terminal = (function (_super) {
+            __extends(Terminal, _super);
+            function Terminal(id, width, height, htmlText) {
+                _super.call(this, id, flowchart.constants.ShapeType.Terminal, width, height, htmlText, "shape_terminal");
+            }
+            //overridden
+            Terminal.prototype.GetMetadataDiv = function () {
+                var element = document.createElement("div");
+                element.classList.add(this.CssBackgroundClass);
+                return element;
+            };
+            return Terminal;
+        }(shape.ShapeBase));
+        shape.Terminal = Terminal;
+    })(shape = flowchart.shape || (flowchart.shape = {}));
 })(flowchart || (flowchart = {}));
 var flowchart;
 (function (flowchart) {
@@ -1683,6 +1818,19 @@ var flowchart;
             this.eventHandler = eventHandler;
             this.Paper = paper;
         }
+        ShapeMover.prototype.FixShape = function (shape, isFixed) {
+            shape.IsFixed = isFixed;
+            if (isFixed) {
+                shape.RaphaelElement.attr("cursor", "");
+                shape.RaphaelElement.undrag();
+            }
+            else {
+                shape.IsFixed = isFixed;
+                shape.RaphaelElement.attr("cursor", "move");
+                shape.RaphaelElement.undrag();
+                shape.RaphaelElement.drag(this.GetOnMoveStart(shape), this.GetDragger(shape), this.GetOnMoveFinished(shape));
+            }
+        };
         /**
          * registers an shape to be draggable
          * @param shape
@@ -1809,7 +1957,6 @@ var flowchart;
             //Example: http://jsfiddle.net/CHUrB/
             var self = this;
             return function (x, y, event) {
-                // Original coords for main element
                 self.CurrentDraggedShapeType = shape.Type;
                 shape.BeforeMove(x, y);
                 if (self.IsConnectionPoint(this)) {
@@ -1918,132 +2065,8 @@ var flowchart;
     }());
     flowchart.ShapeMover = ShapeMover;
 })(flowchart || (flowchart = {}));
-var flowchart;
-(function (flowchart) {
-    var shape;
-    (function (shape) {
-        var ConnectionPoint = (function (_super) {
-            __extends(ConnectionPoint, _super);
-            function ConnectionPoint(type, position, width, height) {
-                if (width === void 0) { width = 30; }
-                if (height === void 0) { height = 30; }
-                _super.call(this, "", flowchart.constants.ShapeType.ConnectionPoint, width, height, null, "");
-                this.PointType = type;
-                this.Position = position;
-            }
-            ConnectionPoint.prototype.DrawShape = function (paper, posX, posY) {
-                var p = this.ParentShape.RaphaelElement;
-                var parentBbox = p.getBBox();
-                var x = 0, y = 0;
-                var pointWidth = 5;
-                var pointHeight = 5;
-                var positions = this.ParentShape.CalculateConnectionPointCoord(this.Position, pointWidth, pointHeight);
-                x = positions.x;
-                y = positions.y;
-                if (x === 0) {
-                    x = parentBbox.x;
-                    y = parentBbox.y;
-                }
-                ////this.RaphaelElement = this.Paper.rect(x, y, pointWidth, pointHeight);
-                var element = paper.circle(x, y, pointWidth);
-                element.data("shape", this);
-                //var cssClass = common.DomHelper.GetCssClass(this.CssBackgroundClass);
-                //if (cssClass)
-                //    element.attr({ fill: cssClass.style["background-color"] });
-                if (this.PointType != flowchart.constants.ConnectionPointType.Incoming) {
-                    //add cursor:pointer because these points are draggable
-                    element.attr({ cursor: "crosshair" });
-                }
-                return element;
-            };
-            ConnectionPoint.prototype.GetPosition = function () {
-                return new flowchart.model.ShapePosition(this.RaphaelElement.attr("cx"), this.RaphaelElement.attr("cy"));
-                //return { x: this.RaphaelElement.attr("cx"), y: this.RaphaelElement.attr("cy") };
-            };
-            ConnectionPoint.prototype.SetPosition = function (posX, posY) {
-                this.RaphaelElement.attr({ cx: posX, cy: posY });
-            };
-            ConnectionPoint.prototype.GetMetadataDiv = function () {
-                return null;
-            };
-            ConnectionPoint.prototype.CreateCopy = function () {
-                //var parentShape = this.RaphaelElement.data("shape");
-                var connectionPoint = new ConnectionPoint(this.PointType, this.Position, this.Width, this.Height);
-                connectionPoint.RaphaelElement = this.RaphaelElement.clone();
-                return connectionPoint;
-            };
-            ConnectionPoint.prototype.OnSelect = function () {
-            };
-            ConnectionPoint.prototype.OnUnselect = function () {
-            };
-            return ConnectionPoint;
-        }(shape.ShapeBase));
-        shape.ConnectionPoint = ConnectionPoint;
-    })(shape = flowchart.shape || (flowchart.shape = {}));
-})(flowchart || (flowchart = {}));
-var flowchart;
-(function (flowchart) {
-    var shape;
-    (function (shape) {
-        var metadata;
-        (function (metadata) {
-            var Html = (function () {
-                function Html(htmlText) {
-                    var htmlElement = document.createElement("div");
-                    htmlElement.style.width = "100%";
-                    htmlElement.style.height = "100%";
-                    //"   <div>" + this.Label + "</div>";
-                    this.Html = htmlElement;
-                    this.SetHtmlText(htmlText);
-                }
-                /**
-                 * Set the containing HTML
-                 * @param htmlElement
-                 */
-                Html.prototype.SetHtml = function (htmlElement) {
-                    this.Html = htmlElement;
-                };
-                /**
-                 * Set the containing HTML with string
-                 * @param innerHtml
-                 */
-                Html.prototype.SetHtmlText = function (innerHtml) {
-                    this.Html.innerHTML = innerHtml;
-                };
-                /**
-                 * returns the metadata as HTMLElement
-                 */
-                Html.prototype.GetHtml = function () {
-                    return this.Html;
-                };
-                return Html;
-            }());
-            metadata.Html = Html;
-        })(metadata = shape.metadata || (shape.metadata = {}));
-    })(shape = flowchart.shape || (flowchart.shape = {}));
-})(flowchart || (flowchart = {}));
-var flowchart;
-(function (flowchart) {
-    var shape;
-    (function (shape) {
-        var Terminal = (function (_super) {
-            __extends(Terminal, _super);
-            function Terminal(id, width, height, htmlText) {
-                _super.call(this, id, flowchart.constants.ShapeType.Terminal, width, height, htmlText, "shape_terminal");
-            }
-            //overridden
-            Terminal.prototype.GetMetadataDiv = function () {
-                var element = document.createElement("div");
-                element.classList.add(this.CssBackgroundClass);
-                return element;
-            };
-            return Terminal;
-        }(shape.ShapeBase));
-        shape.Terminal = Terminal;
-    })(shape = flowchart.shape || (flowchart.shape = {}));
-})(flowchart || (flowchart = {}));
 /*!
-* TKO.FlowchartDesigner v1.0.3.0
+* TKO.FlowchartDesigner v1.0.4.0
 * License: MIT
 * Created By: Tobias Koller
 * Git: https://github.com/TobiasKoller/tko.flowchartdesigner
