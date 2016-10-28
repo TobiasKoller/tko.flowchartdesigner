@@ -473,7 +473,7 @@ var flowchart;
             var wrapperId = "__wrapper__" + parentId;
             var wrapperDiv = document.createElement("div");
             wrapperDiv.id = wrapperId;
-            wrapperDiv.style.cssText = "width:100%;height: 100%;margin: 0;padding: 0;position:relative;z-index:1000;border:1px solid blue";
+            wrapperDiv.style.cssText = "width:100%;height: 100%;margin: 0;padding: 0;position:relative;z-index:1000;";
             parentElement.appendChild(wrapperDiv);
             return wrapperId;
         };
